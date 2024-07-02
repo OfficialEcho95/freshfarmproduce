@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .product-description {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #28a745;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .product-quantity {
+            font-size: 1.1rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .product-categories {
+            font-size: 1.1rem;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .product-location {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .product-images img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button class="back-button" onclick="goBack()">Back to Products</button>
+        <div class="product-details">
+            <h1 class="product-title" id="productTitle">Loading...</h1>
+            <div class="product-images" id="productImages">
+                <img src="" alt="Product Image">
+            </div>
+            <p class="product-description" id="productDescription">Loading...</p>
+            <p class="product-price" id="productPrice">Loading...</p>
+            <p class="product-quantity" id="productQuantity">Loading...</p>
+            <p class="product-categories" id="productCategories">Loading...</p>
+            <p class="product-location" id="productLocation">Loading...</p>
+        </div>
+        <button id="updateButton" class="btn" onclick="updateProduct()">Update Product</button>
+        <button id="purchaseButton" class="btn" onclick="purchaseProduct()"> Buy </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            if (productId) {
+                await fetchProductDetails(productId);
+            } else {
+                alert('Product ID not found.');
+            }
+        });
+
+        async function fetchProductDetails(productId) {
+            try {
+                const response = await fetch(`/api/v1/users/commodity-by-id/${productId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok && data && data.commodity) {
+                    displayProductDetails(data.commodity);
+                    toggleButtons(data.commodity.farmer);
+                } else {
+                    console.error("Error fetching product details:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching product details:", error);
+            }
+        }
+
+        function displayProductDetails(product) {
+            document.getElementById('productTitle').textContent = product.title;
+            document.getElementById('productDescription').textContent = product.description;
+            document.getElementById('productPrice').textContent = `₦${product.price.toFixed(2)}`;
+            document.getElementById('productQuantity').textContent = `Available: ${product.quantityAvailable}`;
+            document.getElementById('productCategories').textContent = `Categories: ${product.categories.join(', ')}`;
+            document.getElementById('productLocation').textContent = `Location: ${product.location}`;
+
+            const productImages = document.getElementById('productImages');
+            productImages.innerHTML = ''; // Clear existing images
+            product.images.forEach(imageUrl => {
+                const img = document.createElement('img');
+                img.src = `/${imageUrl}`;
+                img.alt = product.title;
+                productImages.appendChild(img);
+            });
+        }
+
+        function toggleButtons(farmerId) {
+            const updateButton = document.getElementById('updateButton');
+            const purchaseButton = document.getElementById('purchaseButton');
+            const currentUserId = localStorage.getItem('userId');
+
+            if (farmerId !== currentUserId) {
+                purchaseButton.style.display = 'block';
+                updateButton.style.display = 'none';
+            } else {
+                purchaseButton.style.display = 'none';
+                updateButton.style.display = 'block';
+            }
+        }
+
+        function goBack() {
+            window.history.back();
+        }
+
+        function updateProduct() {
+            const currentUserId = localStorage.getItem('userId');
+            const postId = new URLSearchParams(window.location.search).get('id');
+
+            window.location.href = `/update-product-page.html?id=${currentUserId}&postId=${postId}`;
+        }
+
+        function purchaseProduct() {
+            // Implement purchase functionality here
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Commodity</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        #alert {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f8d7da;
+            color: #45715a;
+            padding: 10px 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: calc(100% - 12px);
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input[type="file"] {
+            margin-top: 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Add a New Commodity</h1>
+    <form id="addCommodityForm" action="/api/v1/users/add-commodity" method="POST" enctype="multipart/form-data">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="price">Price:</label>
+        <input type="number" step="0.01" id="price" name="price" required>
+
+        <label for="quantityAvailable">Quantity Available:</label>
+        <input type="number" id="quantityAvailable" name="quantityAvailable" required>
+
+        <label for="categories">Categories:</label>
+        <select id="categories" name="categories" required>
+            <option value="fruits">Fruits</option>
+            <option value="vegetables">Vegetables</option>
+            <option value="spice">Spice</option>
+            <option value="others">Others</option>
+        </select>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+
+        <label for="images">Upload Images:</label>
+        <input type="file" id="images" name="images" accept="image/*" multiple capture="camera" required>
+
+        <button type="submit">Add Commodity</button>
+        <div id="alert">Product added successfully</div>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('addCommodityForm');
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const title = document.getElementById('title').value;
+                const description = document.getElementById('description').value;
+                const price = document.getElementById('price').value;
+                const quantityAvailable = document.getElementById('quantityAvailable').value;
+                const categories = document.getElementById('categories').value;
+                const location = document.getElementById('location').value;
+                const images = document.getElementById('images').files;
+
+                const formData = new FormData();
+                formData.append('title', title);
+                formData.append('description', description);
+                formData.append('price', price);
+                formData.append('quantityAvailable', quantityAvailable);
+                formData.append('categories', categories);
+                formData.append('location', location);
+                for (let i = 0; i < images.length; i++) {
+                    formData.append('images', images[i]);
+                }
+
+                try {
+                    const response = await fetch('/api/v1/users/add-commodity', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showAlert("Your product was added. Redirecting you back to home.");
+                        window.location.href = `/seller-dashboard.html`;
+                    } else {
+                        showAlert("An error occurred, please try again.");
+                    }
+                } catch (error) {
+                    console.error('Error:', error.message);
+                    showAlert("An error occurred, please try again.");
+                }
+            });
+
+            function showAlert(message) {
+                const alertDiv = document.getElementById('alert');
+                alertDiv.textContent = message;
+                alertDiv.style.display = 'block';
+                setTimeout(() => {
+                    alertDiv.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>

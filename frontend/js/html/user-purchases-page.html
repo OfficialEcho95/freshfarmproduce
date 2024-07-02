@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Purchases</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .purchase-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+        .purchase-card:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .purchase-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .purchase-card .details {
+            display: flex;
+            align-items: center;
+        }
+
+        .purchase-card h5 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .purchase-card p {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .purchase-card .price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .purchase-card .quantity {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .no-purchases {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .no-purchases img {
+            width: 450px;
+            height: 450px;
+        }
+
+        .back-button {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button id='back-button' class="btn btn-secondary back-button" onclick="goBack()">Back</button>
+        <h1 class="text-center mb-4">Your Purchases</h1>
+        <div id="purchases-container" class="row">
+            <!-- Purchase cards will be dynamically added here -->
+        </div>
+        <div id="no-purchases" class="no-purchases" style="display: none;">
+            <img src="sad-emoji.png" alt="No Purchases">
+            <p id="no-purchases-message"></p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script src="js/js/user-purchases-page.js" defer></script>
+</body>
+
+</html>

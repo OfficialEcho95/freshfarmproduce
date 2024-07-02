@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .card {
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-custom {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+
+        #alert {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h2 class="card-title text-center">Login</h2>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-custom btn-block">Login</button>
+                <div id="error-message" class="text-danger mt-3" style="display: none;">Login failed. Please check your
+                    credentials.</div>
+            </form>
+        </div>
+    </div>
+    <div id="alert">Wrong Email or Password</div>
+
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
+            const alertDiv = document.getElementById("alert");
+
+            try {
+                const response = await fetch('/api/v1/users/login-user', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                console.log(email, password);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data.id);
+
+                    localStorage.setItem('userId', data.id);
+
+                    // Redirect based on user role
+                    if (data.user.role === 'farmer') {
+                        window.location.href = `/seller-dashboard.html?id=${data.user._id}&g=hasproducttosell`;
+                    } else if (data.user.role === 'admin') {
+                        window.location.href = `/admin-dashboard.html?id=${data.user._id}&g=admin`;
+                    } else {
+                        window.location.href = `/buyer-dashboard.html?id=${data.user._id}&g=regularcustomer`;
+                    }
+                } else {
+                    showAlert("Wrong Email or Password");
+                }
+            } catch (error) {
+                console.error("Failed to log in user or admin:", error);
+                showAlert("An error occurred. Please try again.");
+            }
+        });
+
+        function showAlert(message) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 1000);
+        }
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

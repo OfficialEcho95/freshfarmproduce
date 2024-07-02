@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Products</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .product-card {
+            cursor: pointer;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s;
+        }
+
+
+        .product-card:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            width: 100%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            object-fit: cover;
+            height: 200px;
+        }
+
+        .product-card .card-body {
+            padding: 20px;
+        }
+
+        .product-card h5 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-card p {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .product-card .price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .product-card .quantity {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .product-card .categories {
+            font-size: 0.9rem;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Your Products</h1>
+        <div id="productsContainer" class="row">
+            <!-- Product Cards will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const farmerId = localStorage.getItem('userId');
+
+        async function getProducts(farmerId) {
+            try {
+                const response = await fetch(`/api/v1/users/farmer/${farmerId}/commodities`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    renderProducts(data.commodities);
+                } else {
+                    console.log("Error fetching products:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        }
+
+        // Function to render products
+        function renderProducts(commodities) {
+            const productsContainer = document.getElementById('productsContainer');
+            productsContainer.innerHTML = ''; // Clear previous content
+
+            commodities.forEach(product => {
+                const imageUrl = (product.images && product.images.length > 0) ? `/${product.images[0]}` : 'placeholder.jpg';
+
+                const card = `
+                    <div class="col-md-4">
+                        <div class="product-card" onclick="viewProductDetails('${product._id}')">
+                            <img src="${imageUrl}" alt="${product.title}">
+                            <div class="card-body">
+                                <h5>${product.title}</h5>
+                                <p>${product.description}</p>
+                                <p class="price">$${product.price.toFixed(2)}</p>
+                                <p class="quantity">Available: ${product.quantityAvailable}</p>
+                                <p class="categories">${product.categories.join(', ')}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                productsContainer.innerHTML += card;
+            });
+        }
+
+        // Function to navigate to product details or update page
+        function viewProductDetails(productId) {
+            localStorage.setItem('comId', productId);
+            window.location.href = `/product-details.html?id=${productId}`;
+        }
+
+        // Render products on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            if (farmerId) {
+                getProducts(farmerId);
+            } else {
+                console.error("Farmer ID not found in localStorage.");
+            }
+        });
+    </script>
+</body>
+
+</html>

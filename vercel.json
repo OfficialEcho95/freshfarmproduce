@@ -1,0 +1,31 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "server.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/server.js"
+        },
+        {
+            "src": "/commodityUploads/(.*)",
+            "dest": "/commodityUploads/$1"
+        },
+        {
+            "src": "/js/(.*)",
+            "dest": "/frontend/js/html/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/frontend/$1"
+        },
+        {
+            "src": "/favicon.ico",
+            "dest": "/favicon.ico"
+        }
+    ]
+}

@@ -34,7 +34,7 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'frontend')));
 
 // Serve static files from the 'js' directory
-app.use(express.static(path.join(__dirname, 'frontend/js/html')));
+app.use('/js', express.static(path.join(__dirname, 'frontend/js/html')));
 
 // Serve static files from the commodityUploads directory
 app.use('/commodityUploads', express.static(path.join(__dirname, '/commodityUploads')));

@@ -17,15 +17,11 @@
         },
         {
             "src": "/js/(.*)",
-            "dest": "/frontend/js/html/$1"
+            "dest": "/frontend/$1"
         },
         {
             "src": "/(.*)",
-            "dest": "/frontend/index.html"
-        },
-        {
-            "src": "/favicon.ico",
-            "dest": "/favicon.ico"
+            "dest": "/frontend/$1"
         }
     ]
 }

@@ -9,7 +9,6 @@ const dbConnect = require('./backend/db/db');
 const PORT = 3000;
 const userRoutes = require('./backend/users/routes/usersRoutes');
 const adminRoutes = require('./backend/admin/routes/adminRoutes');
-// const favicon = require('serve-favicon');
 
 dbConnect();
 
@@ -20,7 +19,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      maxAge: 60 * 1000 * 60 * 3, //session expires after 3 hours
+      maxAge: 60 * 1000 * 60 * 3,
       secure: false,
     },
      store: MongoStore.create({

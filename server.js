@@ -9,6 +9,7 @@ const dbConnect = require('./backend/db/db');
 const PORT = 3000;
 const userRoutes = require('./backend/users/routes/usersRoutes');
 const adminRoutes = require('./backend/admin/routes/adminRoutes');
+// const favicon = require('serve-favicon');
 
 dbConnect();
 
@@ -27,6 +28,8 @@ app.use(
     }),
   })
 );
+
+// Serve favicon
 
 app.use(cors());
 

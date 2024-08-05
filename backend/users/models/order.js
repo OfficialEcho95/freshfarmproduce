@@ -27,6 +27,11 @@ const OrderSchema = new Schema({
             type: [String],
             default: [],
         },
+        seller: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
     }],
     totalAmount: {
         type: Number,

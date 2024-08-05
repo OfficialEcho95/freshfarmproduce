@@ -6,7 +6,7 @@ const cors = require('cors');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const dbConnect = require('./backend/db/db');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const userRoutes = require('./backend/users/routes/usersRoutes');
 const adminRoutes = require('./backend/admin/routes/adminRoutes');
 
@@ -34,9 +34,7 @@ app.use(cors());
 
 // Serve static files from the 'frontend' directory
 app.use(express.static(path.join(__dirname, 'frontend')));
-
-// Serve static files from the 'js' directory
-app.use('/js', express.static(path.join(__dirname, 'frontend/js/html')));
+app.use(express.static(path.join(__dirname, 'frontend/js/html')))
 
 // Serve static files from the commodityUploads directory
 app.use('/commodityUploads', express.static(path.join(__dirname, '/commodityUploads')));

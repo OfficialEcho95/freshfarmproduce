@@ -3,6 +3,13 @@ const User = require('../../users/models/user');
 const { initializePayment } = require('../../../payment/paymentController');
 const Order = require('../models/order');
 const Post = require('../models/post');
+const { createObjectCsvWriter } = require('csv-writer');
+const paginate = require('express-paginate');
+const express = require('express');
+const router = express.Router();
+router.use(paginate.middleware(20, 5000)); // 20 items per page, max limit of 5000
+
+
 
 //route for farmer to add product to his catalogue
 const addCommodity = async (req, res) => {
@@ -46,7 +53,7 @@ const addCommodity = async (req, res) => {
             description: newCommodity.description,
             price: newCommodity.price,
             images: newCommodity.images,
-            tags: newCommodity.categories, 
+            tags: newCommodity.categories,
             lastDisplayedAt: new Date(0),
         });
 
@@ -58,7 +65,6 @@ const addCommodity = async (req, res) => {
         res.status(500).json({ message: "Error encountered adding commodity" });
     }
 };
-
 
 //route to purchase a commodity
 const buyCommodity = async (req, res) => {
@@ -267,9 +273,133 @@ const getCompleteOrdersByFarmer = async (req, res) => {
     }
 };
 
+//route to get the all complete sales for sellers
+const mostCompletedSales = async (req, res) => {
+    try {
+        // Aggregate query to find top farmers by completedSales
+        const topFarmers = await User.aggregate([
+            {
+                $match: {
+                    role: 'farmer',
+                    completedSales: { $gt: 0 }
+                }
+            },
+            {
+                $group: {
+                    _id: '$role',
+                    farmers: {
+                        $push: {
+                            _id: '$_id',
+                            name: '$name',
+                            completedSales: '$completedSales'
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: '$farmers' //Deconstructs the farmers array for further processing
+            },
+            {
+                $sort: { 'farmers.completedSales': -1 } // Sort descending by completedSales
+            },
+            {
+                $limit: 20 // Limit to the top 20 farmers
+            }
+        ]);
+
+        res.json(topFarmers);
+    } catch (error) {
+        console.error('Error fetching top farmers:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// Route to get the sales reports
+const salesReport = async (req, res) => {
+    try {
+        const { format } = req.query;
+        const { page, limit } = req.query;
+        const skip = (page - 1) * limit;
+
+        const orders = await Order.find({ paymentStatus: 'paid' })
+            .populate('items.commodity')
+            .populate('items.seller')
+            .skip(skip)
+            .limit(limit);
+
+        const data = orders.map(order => {
+            return order.items.map(item => ({
+                itemName: item.commodity.name,
+                sellerName: item.seller.name,
+                quantity: item.quantity,
+                amountPaid: item.price * item.quantity,
+                orderId: order._id,
+                orderDate: order.createdAt,
+            }));
+        }).flat();
+
+        if (format === 'csv') {
+            // Export to CSV
+            const csvWriter = createObjectCsvWriter({
+                path: 'sales_report.csv',
+                header: [
+                    { id: 'itemName', title: 'Item Name' },
+                    { id: 'sellerName', title: 'Seller Name' },
+                    { id: 'quantity', title: 'Quantity Bought' },
+                    { id: 'amountPaid', title: 'Amount Paid' },
+                    { id: 'orderId', title: 'Order ID' },
+                    { id: 'orderDate', title: 'Order Date' }
+                ]
+            });
+
+            await csvWriter.writeRecords(data);
+            res.download('sales_report.csv');
+        } else if (format === 'chart') {
+            // View as pie chart
+            const itemSales = data.reduce((acc, item) => {
+                if (!acc[item.itemName]) {
+                    acc[item.itemName] = 0;
+                }
+                acc[item.itemName] += item.quantity;
+                return acc;
+            }, {});
+
+            const chartData = {
+                labels: Object.keys(itemSales),
+                datasets: [{
+                    data: Object.values(itemSales),
+                    backgroundColor: Object.keys(itemSales).map(() => `#${Math.floor(Math.random() * 16777215).toString(16)}`)
+                }]
+            };
+
+            res.json({ chartData });
+        } else {
+            // Display on screen with pagination
+            const itemCount = await Order.countDocuments({ paymentStatus: 'paid' });
+            const pageCount = Math.ceil(itemCount / limit);
+
+            res.json({
+                has_more: paginate.hasNextPages(req)(pageCount),
+                items: data,
+                pageCount,
+                itemCount
+            });
+        }
+    } catch (error) {
+        console.error('Error generating sales report:', error);
+        res.status(500).json({ message: 'Error generating sales report' });
+    }
+};
+
+// route to get the user reports and behaviors
+
+
+
+// route to get the invertory reports
 module.exports = {
+    router,salesReport, 
     addCommodity, buyCommodity, getCommoditiesByFarmer,
     getCommodityById, getAllCommodities, updateCommodity,
     updateCommodity, deleteCommodityByName, searchCommodities,
-    getCompleteOrdersByFarmer
+    getCompleteOrdersByFarmer, mostCompletedSales
 };

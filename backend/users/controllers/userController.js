@@ -68,6 +68,7 @@ const loginUser = async (req, res) => {
         req.session.userId = (user._id).toString();
         req.session.token = token;
 
+
         await req.session.save();
         return res.status(200).json({ message: `${user.name} logged in successfully`, id: `${user._id}`, user });
     } catch (err) {

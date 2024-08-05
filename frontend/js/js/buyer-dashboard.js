@@ -104,17 +104,11 @@ async function fetchRandomPosts() {
     }
 }
 
-
-async function fetchPosts() {
-    try {
-        const response = await fetch('/api/v1/users/posts');
-        if (!response.ok) {
-            console.log("Error fetching posts");
-        }
-        const data = await response.json();
-        console.log(data)
-
-    } catch (err) {
-        console.log(err)
+document.addEventListener('click', async (event) => {
+    event.preventDefault();
+    
+    const shop_new_button = document.getElementById('shop_new_button');
+    if (event.target === shop_new_button) {
+        window.location.href = '/all-products-page.html?products';
     }
-}
+});

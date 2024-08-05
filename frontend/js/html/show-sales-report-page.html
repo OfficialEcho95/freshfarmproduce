@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .controls button:hover {
+            background-color: #0056b3;
+        }
+
+        #salesTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #salesTable th,
+        #salesTable td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        #salesTable th {
+            background-color: #f8f8f8;
+        }
+
+        #pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #pagination button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Sales Report</h1>
+        <div class="controls">
+            <button id="exportCsvBtn">Export to CSV</button>
+            <button id="viewChartBtn">View as Pie Chart</button>
+            <button id="viewDataBtn">View Data</button>
+        </div>
+        <div id="reportContent">
+            <canvas id="salesChart" style="display: none;"></canvas>
+            <table id="salesTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Seller Name</th>
+                        <th>Quantity Bought</th>
+                        <th>Amount Paid</th>
+                        <th>Order ID</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="pagination" style="display: none;"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const exportCsvBtn = document.getElementById('exportCsvBtn');
+            const viewChartBtn = document.getElementById('viewChartBtn');
+            const viewDataBtn = document.getElementById('viewDataBtn');
+            const salesChart = document.getElementById('salesChart');
+            const salesTable = document.getElementById('salesTable');
+            const pagination = document.getElementById('pagination');
+
+            exportCsvBtn.addEventListener('click', () => {
+                window.location.href = '/sales-report?format=csv';
+            });
+
+            viewChartBtn.addEventListener('click', () => {
+                fetch('/sales-report?format=chart')
+                    .then(response => response.json())
+                    .then(data => {
+                        salesTable.style.display = 'none';
+                        pagination.style.display = 'none';
+                        salesChart.style.display = 'block';
+                        renderChart(data.chartData);
+                    })
+                    .catch(error => console.error('Error fetching chart data:', error));
+            });
+
+            viewDataBtn.addEventListener('click', () => {
+                fetchData(1);
+            });
+
+            function fetchData(page) {
+                fetch(`/sales-report?page=${page}&limit=20`)
+                    .then(response => response.json())
+                    .then(data => {
+                        salesChart.style.display = 'none';
+                        renderTable(data.items);
+                        renderPagination(data.pageCount, data.currentPage);
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+
+            function renderChart(data) {
+                const ctx = salesChart.getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            text: 'Sales Report'
+                        }
+                    }
+                });
+            }
+
+            function renderTable(data) {
+                const tbody = salesTable.querySelector('tbody');
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const row = `
+                        <tr>
+                            <td>${item.itemName}</td>
+                            <td>${item.sellerName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.amountPaid}</td>
+                            <td>${item.orderId}</td>
+                            <td>${new Date(item.orderDate).toLocaleDateString()}</td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+                salesTable.style.display = 'table';
+                pagination.style.display = 'block';
+            }
+
+            function renderPagination(pageCount, currentPage) {
+                pagination.innerHTML = '';
+                for (let i = 1; i <= pageCount; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = i;
+                    button.addEventListener('click', () => fetchData(i));
+                    if (i === currentPage) {
+                        button.disabled = true;
+                    }
+                    pagination.appendChild(button);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

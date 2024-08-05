@@ -68,82 +68,13 @@
                             <option value="">options</option>
                             <option value="add-products">Add Products</option>
                             <option value="purchases">Purchases</option>
+                            <option value="sales-history">Sales History</option>
                             <option value="update-product">Update Product</option>
                             <option value="show-products">Show Products</option>
                             <option value="delete-product">Delete Product</option>
                             <option value="logout">Logout</option>
                         </select>
 
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                document.getElementById('user-options').addEventListener('change', async (event) => {
-                                    event.preventDefault(); // Prevent default form submission behavior
-
-                                    console.log('Selected option:', event.target.value); // Log selected option
-
-                                    if (event.target.value === 'logout') {
-                                        try {
-                                            const response = await fetch('/api/v1/users/logout-user', {
-                                                method: 'GET',
-                                                headers: {
-                                                    'Content-Type': 'application/json'
-                                                }
-                                            });
-
-                                            if (response.ok) {
-                                                // Clear cache
-                                                if ('caches' in window) {
-                                                    const cacheNames = await caches.keys();
-                                                    await Promise.all(
-                                                        cacheNames.map(cacheName => caches.delete(cacheName))
-                                                    );
-                                                }
-
-                                                // Redirect to home page
-                                                window.location.href = '/';
-                                            } else {
-                                                throw new Error('Error logging out');
-                                            }
-                                        } catch (error) {
-                                            console.error('Logout error:', error.message);
-                                        }
-                                    }
-
-                                    // Handle the add product function
-                                    if (event.target.value === 'add-products') {
-                                        // Redirect to add-product-page.html (use absolute path)
-                                        window.location.href = '/add-product-page.html';
-                                    }
-
-                                    // Handle the show products function
-                                    const userId = localStorage.getItem('userId');
-                                    const comId = localStorage.getItem('comId'); //commodity Id
-
-                                    if (event.target.value === 'show-products') {
-                                        window.location.href = `/show-product-page.html?=${userId}`;
-                                    }
-
-                                    if (event.target.value === 'update-product') {
-                                        window.location.href = `/update-product-page.html?id=${userId}?comId=${comId}`;
-                                    }
-
-                                    if (event.target.value === 'purchases') {
-                                        window.location.href = `/user-purchases-page.html?id=${userId}?order=successful`;
-                                    }
-                                });
-
-
-                                async function fetchPosts() {
-                                    const response = await fetch('/api/v1/users/posts');
-                                    if (!response.ok) {
-                                        console.log("Error fetching posts");
-                                    }
-                                    const data = response.json();
-                                    console.log(data);
-                                }
-                            });
-
-                        </script>
 
                     </div>
 
@@ -227,8 +158,8 @@
                         <li class="side-menu">
                             <a href="#">
                                 <i class="fa fa-shopping-bag"></i>
-                                <span class="badge">3</span>
-                                <p>My Cart</p>
+                                <span class="badge"> <!-- Here the number of items in the cart would be added --> </span>
+                                <p id="my-cart-button">My Cart</p>
                             </a>
                         </li>
                     </ul>
@@ -244,16 +175,6 @@
                             <a href="#" class="photo"><img src="images/img-pro-01.jpg" class="cart-thumb" alt="" /></a>
                             <h6><a href="#">Delica omtantur </a></h6>
                             <p>1x - <span class="price">$80.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" class="photo"><img src="images/img-pro-02.jpg" class="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Omnes ocurreret</a></h6>
-                            <p>1x - <span class="price">$60.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" class="photo"><img src="images/img-pro-03.jpg" class="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Agam facilisis</a></h6>
-                            <p>1x - <span class="price">$40.00</span></p>
                         </li>
                         <li class="total">
                             <a href="#" class="btn btn-default hvr-hover btn-cart">VIEW CART</a>
@@ -291,7 +212,7 @@
                             <h1 class="m-b-20"><strong>Welcome To <br> Freshshop</strong></h1>
                             <p class="m-b-40">See how your users experience your website in realtime or view <br> trends
                                 to see any changes in performance over time.</p>
-                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                            <p><a id="shop_new_button" class="btn hvr-hover shopnewbutton" href="#">Shop New</a></p>
                         </div>
                     </div>
                 </div>
@@ -304,7 +225,7 @@
                             <h1 class="m-b-20"><strong>Welcome To <br> Freshshop</strong></h1>
                             <p class="m-b-40">See how your users experience your website in realtime or view <br> trends
                                 to see any changes in performance over time.</p>
-                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                            <p><a id="shop_new_button" class="btn hvr-hover shopnewbutton" href="#">Shop New</a></p>
                         </div>
                     </div>
                 </div>
@@ -317,7 +238,7 @@
                             <h1 class="m-b-20"><strong>Welcome To <br> Freshshop</strong></h1>
                             <p class="m-b-40">See how your users experience your website in realtime or view <br> trends
                                 to see any changes in performance over time.</p>
-                            <p><a class="btn hvr-hover" href="#">Shop New</a></p>
+                            <p><a id="shop_new_button" class="btn hvr-hover shopnewbutton" href="#">Shop New</a></p>
                         </div>
                     </div>
                 </div>
@@ -335,21 +256,21 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <div class="shop-cat-box">
-                        <img class="img-fluid" src="images/categories_img_01.jpg" alt="" />
-                        <a class="btn hvr-hover" href="#">Lorem ipsum dolor</a>
+                    <div class="shop-cat-box belowshopnew">
+                        <img class="img-fluid belowshopnewimage" src="" alt="" />
+                        <a class="btn hvr-hover belowshopnewtitle" href="#">Loading..</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <div class="shop-cat-box">
-                        <img class="img-fluid" src="images/categories_img_02.jpg" alt="" />
-                        <a class="btn hvr-hover" href="#">Lorem ipsum dolor</a>
+                    <div class="shop-cat-box belowshopnew">
+                        <img class="img-fluid belowshopnewimage" src="" alt="" />
+                        <a class="btn hvr-hover belowshopnewtitle" href="#">Loading..</a>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                    <div class="shop-cat-box">
-                        <img class="img-fluid" src="images/categories_img_03.jpg" alt="" />
-                        <a class="btn hvr-hover" href="#">Lorem ipsum dolor</a>
+                    <div class="shop-cat-box belowshopnew">
+                        <img class="img-fluid belowshopnewimage" src="" alt="" />
+                        <a class="btn hvr-hover belowshopnewtitle" href="#">Loading..</a>
                     </div>
                 </div>
             </div>
@@ -389,8 +310,8 @@
                 <div class="col-lg-12">
                     <div class="special-menu text-center">
                         <div class="button-group filter-button-group">
-                            <button class="active" data-filter="*">All</button>
-                            <button data-filter=".top-featured">Top featured</button>
+                            <button class="active all-products-button" data-filter="*">All</button>
+                            <button class="active top-featured-button" data-filter=".top-featured">Top featured</button>
                             <button data-filter=".best-seller">Best seller</button>
                         </div>
                     </div>
@@ -398,13 +319,14 @@
             </div>
 
             <div class="row special-list">
-                <div class="col-lg-3 col-md-6 special-grid best-seller">
+                <!-- Template product element -->
+                <div class="col-lg-3 col-md-6 special-grid best-seller product-template">
                     <div class="products-single fix">
                         <div class="box-img-hover">
                             <div class="type-lb">
                                 <p class="sale">Sale</p>
                             </div>
-                            <img src="images/img-pro-01.jpg" class="img-fluid" alt="Image">
+                            <img src="" class="img-fluid dynamic-image" alt="Image">
                             <div class="mask-icon">
                                 <ul>
                                     <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i
@@ -418,89 +340,13 @@
                             </div>
                         </div>
                         <div class="why-text">
-                            <h4>Lorem ipsum dolor sit amet</h4>
-                            <h5> $7.79</h5>
+                            <h4 class="dynamic-title"></h4>
+                            <h5 class="dynamic-price"></h5>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 special-grid top-featured">
-                    <div class="products-single fix">
-                        <div class="box-img-hover">
-                            <div class="type-lb">
-                                <p class="new">New</p>
-                            </div>
-                            <img src="images/img-pro-02.jpg" class="img-fluid" alt="Image">
-                            <div class="mask-icon">
-                                <ul>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i
-                                                class="fas fa-eye"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i
-                                                class="fas fa-sync-alt"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                            title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                                <a class="cart" href="#">Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="why-text">
-                            <h4>Lorem ipsum dolor sit amet</h4>
-                            <h5> $9.79</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 special-grid top-featured">
-                    <div class="products-single fix">
-                        <div class="box-img-hover">
-                            <div class="type-lb">
-                                <p class="sale">Sale</p>
-                            </div>
-                            <img src="images/img-pro-03.jpg" class="img-fluid" alt="Image">
-                            <div class="mask-icon">
-                                <ul>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i
-                                                class="fas fa-eye"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i
-                                                class="fas fa-sync-alt"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                            title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                                <a class="cart" href="#">Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="why-text">
-                            <h4>Lorem ipsum dolor sit amet</h4>
-                            <h5> $10.79</h5>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 special-grid best-seller">
-                    <div class="products-single fix">
-                        <div class="box-img-hover">
-                            <div class="type-lb">
-                                <p class="sale">Sale</p>
-                            </div>
-                            <img src="images/img-pro-04.jpg" class="img-fluid" alt="Image">
-                            <div class="mask-icon">
-                                <ul>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i
-                                                class="fas fa-eye"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i
-                                                class="fas fa-sync-alt"></i></a></li>
-                                    <li><a href="#" data-toggle="tooltip" data-placement="right"
-                                            title="Add to Wishlist"><i class="far fa-heart"></i></a></li>
-                                </ul>
-                                <a class="cart" href="#">Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="why-text">
-                            <h4>Lorem ipsum dolor sit amet</h4>
-                            <h5> $15.79</h5>
-                        </div>
-                    </div>
-                </div>
+                <!-- Placeholder for dynamically added products -->
             </div>
         </div>
     </div>
@@ -764,6 +610,7 @@
         </div>
     </footer>
     <!-- End Footer  -->
+
 
     <!-- Start copyright  -->
     <div class="footer-copyright">

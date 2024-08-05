@@ -1,6 +1,7 @@
 const https = require('https');
 const Order = require('../backend/users/models/order');
-const Commodity = require('../backend/users/models/commodity'); 
+const Commodity = require('../backend/users/models/commodity');
+const User = require('../backend/users/models/user');
 
 
 //route to initialize payment
@@ -105,12 +106,24 @@ const verifyPayment = async (req, res) => {
                     };
                     await order.save();
 
-                    // Update inventory
+                    // Update inventory and completed sales for sellers
+                    const sellerIds = new Set();
                     for (let item of order.items) {
                         const commodity = await Commodity.findById(item.commodity);
                         if (commodity) {
                             commodity.quantityAvailable -= item.quantity;
                             await commodity.save();
+                        }
+
+                        sellerIds.add(item.seller);
+                    }
+
+                    // Increment completed sales for each seller
+                    for (let sellerId of sellerIds) {
+                        const seller = await User.findById(sellerId);
+                        if (seller) {
+                            seller.completedSales += 1;
+                            await seller.save();
                         }
                     }
 

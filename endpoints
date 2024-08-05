@@ -1,0 +1,108 @@
+User Management
+User Registration
+
+Endpoint: POST /api/v1/users/register
+Description: Allows users to create a new account.
+Request Body: { name, email, password }
+User Login
+
+Endpoint: POST /api/v1/users/login
+Description: Authenticates users and returns a token.
+Request Body: { email, password }
+User Profile
+
+Endpoint: GET /api/v1/users/profile
+Description: Retrieves the profile information of the logged-in user.
+Headers: { Authorization: Bearer <token> }
+Update User Profile
+
+Endpoint: PUT /api/v1/users/profile
+Description: Updates the profile information of the logged-in user.
+Request Body: { name, email, password }
+Headers: { Authorization: Bearer <token> }
+
+Product Management
+Get All Products
+
+Endpoint: GET /api/v1/products
+Description: Retrieves a list of all products.
+Get Product by ID
+
+Endpoint: GET /api/v1/products/:productId
+Description: Retrieves details of a single product.
+Create New Product
+
+Endpoint: POST /api/v1/products
+Description: Adds a new product to the store.
+Request Body: { name, description, price, images, quantityAvailable }
+Headers: { Authorization: Bearer <token> }
+Note: This should be restricted to admin users.
+Update Product
+
+Endpoint: PUT /api/v1/products/:productId
+Description: Updates the details of an existing product.
+Request Body: { name, description, price, images, quantityAvailable }
+Headers: { Authorization: Bearer <token> }
+Note: This should be restricted to admin users.
+Delete Product
+
+Endpoint: DELETE /api/v1/products/:productId
+Description: Deletes a product from the store.
+Headers: { Authorization: Bearer <token> }
+Note: This should be restricted to admin users.
+Cart Management
+Get Cart
+
+Endpoint: GET /api/v1/cart
+Description: Retrieves the cart of the logged-in user.
+Headers: { Authorization: Bearer <token> }
+Add Item to Cart
+
+Endpoint: POST /api/v1/cart
+Description: Adds an item to the cart.
+Request Body: { commodityId, quantity }
+Headers: { Authorization: Bearer <token> }
+Update Cart Item
+
+Endpoint: PUT /api/v1/cart/:itemId
+Description: Updates the quantity of an item in the cart.
+Request Body: { quantity }
+Headers: { Authorization: Bearer <token> }
+Remove Item from Cart
+
+Endpoint: DELETE /api/v1/cart/:itemId
+Description: Removes an item from the cart.
+Headers: { Authorization: Bearer <token> }
+Order Management
+Create Order
+
+Endpoint: POST /api/v1/orders
+Description: Creates a new order from the items in the cart.
+Request Body: { paymentMethod }
+Headers: { Authorization: Bearer <token> }
+Get User Orders
+
+Endpoint: GET /api/v1/orders
+Description: Retrieves the orders of the logged-in user.
+Headers: { Authorization: Bearer <token> }
+Get Order by ID
+
+Endpoint: GET /api/v1/orders/:orderId
+Description: Retrieves the details of a specific order.
+Headers: { Authorization: Bearer <token> }
+Payment Management
+Process Payment
+Endpoint: POST /api/v1/payments
+Description: Processes the payment for an order using Paystack.
+Request Body: { orderId, paymentDetails }
+Headers: { Authorization: Bearer <token> }
+Additional Features
+Search Products
+
+Endpoint: GET /api/v1/products/search
+Description: Searches for products based on a query.
+Query Parameters: { query }
+Get Products by Category
+
+Endpoint: GET /api/v1/products/category/:categoryId
+Description: Retrieves products belonging to a specific category.

@@ -92,13 +92,13 @@
                         password: password
                     })
                 });
-                console.log(email, password);
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data.id);
 
+                    localStorage.setItem('userRole', data.user.role);
                     localStorage.setItem('userId', data.id);
+                    localStorage.setItem('token', data.token);
 
                     // Redirect based on user role
                     if (data.user.role === 'farmer') {

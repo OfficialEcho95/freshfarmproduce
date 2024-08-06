@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
 
         if (event.target.value === 'logout') {
-            console.log("selected:", event.target.value);
             try {
                 const response = await fetch('/api/v1/users/logout-user', {
                     method: 'GET',
@@ -47,15 +46,12 @@ async function fetchRandomPosts() {
     try {
         const response = await fetch('/api/v1/users/posts');
         if (!response.ok) {
-            console.log("Error fetching posts");
             return;
         }
         const data = await response.json();
-        console.log("All posts:", data);
 
         // Check if data is empty
         if (data.length === 0) {
-            console.log("No posts available.");
             return;
         }
 
@@ -70,13 +66,11 @@ async function fetchRandomPosts() {
 
         // Retrieve the random posts
         const randomPosts = randomIndices.map(index => data[index]);
-        console.log("Random posts:", randomPosts);
 
         // Display the random posts
         const postContainers = document.querySelectorAll('.shop-cat-box');
         randomPosts.forEach((post, index) => {
             const postId = post._id;
-            console.log(postId);
             const postContainer = postContainers[index];
             const postTitle = postContainer.querySelector('#post-title');
             const postImage = postContainer.querySelector('#post-image');

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -78,6 +79,7 @@
             background-color: #0056b3;
         }
     </style>
+
 </head>
 
 <body>
@@ -96,10 +98,51 @@
         </div>
         <button id="updateButton" class="btn" onclick="updateProduct()">Update Product</button>
         <button id="purchaseButton" class="btn" onclick="purchaseProduct()"> Add to Cart </button>
+        <button id="my-cart-button">My Cart</button>
     </div>
 
     <script>
+        async function checkSession() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/v1/users/check-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ token })
+                    });
+
+                    if (response.ok) {
+                        // Session is valid
+                        return true;
+                    } else {
+                        // Session is invalid
+                        localStorage.removeItem('userId');
+                        localStorage.removeItem('token');
+                        window.location.href = '/login.html';
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error checking session:', error);
+                    localStorage.removeItem('userId');
+                    localStorage.removeItem('token');
+                    window.location.href = '/login.html';
+                    return false;
+                }
+            } else {
+                // No token found
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async function () {
+            const isSessionValid = await checkSession();
+            if (!isSessionValid) return;
+
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
 
@@ -176,116 +219,67 @@
         }
 
         function purchaseProduct() {
-            // Implement purchase functionality here
+            const productId = new URLSearchParams(window.location.search).get('id');
+
+            fetch('/api/v1/users/add-to-cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    "commodityId": `${productId}`,
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
 
+        document.getElementById('my-cart-button').addEventListener('click', async function (event) {
+            event.preventDefault();
 
-        const purchaseButton = document.getElementById('purchaseButton');
-        const params = new URLSearchParams(window.location.search);
-        const productId = params.get('id');
-
-        purchaseButton.addEventListener('click', async function () {
             try {
-                const response = await fetch('/api/v1/users/add-to-cart', {
-                    method: 'POST',
+                const cartResponse = await fetch('/cart', {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "commodityId": `${productId}`,
-                    })
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
                 });
 
-                // Check if response is OK
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!cartResponse.ok) {
+                    console.error('Failed to fetch cart data');
+                    return;
                 }
 
-                const data = await response.json();
-                alert(data.message)
+                const cartData = await cartResponse.json();
+                console.log('Cart Data:', cartData);
+
+                const cartItems = cartData.cart.items;
+                if (!Array.isArray(cartItems)) {
+                    console.error('Cart items data is not an array');
+                    return;
+                }
+
+                const cartList = document.querySelector('.cart-list');
+                cartList.innerHTML = '';
+
+                let subTotal = 0;
+                let itemCount = 0;
+
+                for (const item of cartItems) {
+                    const productId = item.commodity;
+                    // Fetch and display cart items
+                }
             } catch (error) {
                 console.error('Error:', error);
             }
         });
-
-
-// cart items
-        document.addEventListener('DOMContentLoaded', function () {
-            const myCartButton = document.getElementById('my-cart-button');
-
-            myCartButton.addEventListener('click', async function (event) {
-                event.preventDefault();
-
-                try {
-                    // Fetch cart data
-                    const cartResponse = await fetch('/cart', {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-
-                    if (!cartResponse.ok) {
-                        console.error('Failed to fetch cart data');
-                        return;
-                    }
-
-                    const cartData = await cartResponse.json();
-                    const cartItems = cartData.cart.items;
-
-                    console.log(cartData);
-
-                    // Get the container for the cart items
-                    const cartList = document.querySelector('.cart-list');
-
-                    // Clear existing items in the cart list (optional)
-                    cartList.innerHTML = '';
-
-                    // Fetch details for each item and render them
-                    for (const item of cartItems) {
-                        const productId = item.commodity; // Assuming commodity field holds the product ID
-
-                        // Fetch product details
-                        const productResponse = await fetch(`/api/v1/users/commodity-by-id/${productId}`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        if (!productResponse.ok) {
-                            console.error(`Failed to fetch product details for ID: ${productId}`);
-                            continue;
-                        }
-
-                        const productData = await productResponse.json();
-                        const product = productData.commodity;
-
-                        // Create cart item element
-                        const cartItem = document.createElement('li');
-                        cartItem.innerHTML = `
-                    <a href="#" class="photo"><img src="${product.images[0]}" class="cart-thumb" alt="${product.name}" /></a>
-                    <h6><a href="#">${product.name}</a></h6>
-                    <p>${item.quantity}x - <span class="price">$${(item.quantity * product.price).toFixed(2)}</span></p>
-                `;
-
-                        // Append cart item to cart list
-                        cartList.insertBefore(cartItem, cartList.querySelector('.total'));
-                    }
-
-                    // Update the total amount
-                    const totalAmount = cartData.cart.totalAmount;
-                    const totalElement = document.querySelector('.cart-list .total');
-                    if (totalElement) {
-                        totalElement.querySelector('.float-right').innerHTML = `<strong>Total</strong>: $${totalAmount.toFixed(2)}`;
-                    }
-                } catch (error) {
-                    console.error('Error while updating cart:', error);
-                }
-            });
-        });
-
-
     </script>
 </body>
 

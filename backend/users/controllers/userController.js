@@ -68,14 +68,14 @@ const loginUser = async (req, res) => {
         req.session.userId = (user._id).toString();
         req.session.token = token;
 
-
         await req.session.save();
-        return res.status(200).json({ message: `${user.name} logged in successfully`, id: `${user._id}`, user });
+        return res.status(200).json({ message: `${user.name} logged in successfully`, id: `${user._id}`, user, token });
     } catch (err) {
         console.log(err)
         res.status(500).json({ message: "Error encountered logging in" });
     }
 }
+
 
 //function to update user data
 const updateUserData = async (req, res) => {
@@ -148,4 +148,26 @@ const logoutUser = async (req, res) => {
 };
 
 
-module.exports = { registerUser, loginUser, logoutUser, updateUserData, deleteUserAccount }
+const checkSession = async (req, res) => {
+    try {
+        const userId = req.session.userId;
+
+        if (!userId) {
+            return res.status(401).json({ valid: false, message: 'Invalid session' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(401).json({ valid: false, message: 'User not found' });
+        }
+
+        // Optionally, you can include more user details if needed
+        res.status(200).json({ valid: true, userId: user._id, role: user.role });
+    } catch (error) {
+        console.error('Error checking session:', error);
+        res.status(500).json({ valid: false, message: 'Internal server error' });
+    }
+}
+
+
+module.exports = { registerUser, loginUser, checkSession, logoutUser, updateUserData, deleteUserAccount }

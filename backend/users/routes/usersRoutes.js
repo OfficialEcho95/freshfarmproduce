@@ -4,7 +4,7 @@ const uploadImages = require('../../../multerUploads');
 const router = express.Router();
 const { authenticateToken, authorizeFarmerOrAdmin } = require('../../middlewares/userAuthentication');
 const { getCommoditiesByFarmer, addCommodity, buyCommodity, verifyPaymentHandler, deleteCommodityByName, updateCommodity, getCompleteOrdersByFarmer, searchCommodities, getCommodityById, salesReport } = require('../controllers/farmerController');
-const { registerUser, updateUserData, loginUser, loginAdmin, logoutUser } = require('../controllers/userController');
+const { registerUser, updateUserData, loginUser, loginAdmin, logoutUser, checkSession } = require('../controllers/userController');
 const { verifyPayment } = require('../../../payment/paymentController');
 const { userPurchases } = require('../controllers/buyerController');
 const { getPosts } = require('../controllers/homefeedController');
@@ -16,6 +16,7 @@ router.post('/login-user', loginUser);
 
 //protected routes
 router.use(authenticateToken);
+router.post('/check-session', checkSession);
 router.get('/logout-user', logoutUser);
 router.put('/update-user-data', updateUserData);
 router.get('/farmer/:farmerId/commodities', getCommoditiesByFarmer);

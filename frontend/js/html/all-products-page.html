@@ -142,9 +142,9 @@
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">Freshshop</a>
+            <a href="#" id="logo" class="logo">Freshshop</a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
+                <li><a href="#" id="home-link">Home</a></li>
                 <li><a href="shop.html">Shop</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact-us.html">Contact</a></li>
@@ -164,57 +164,117 @@
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async function () {
+        async function checkSession() {
             try {
-                const response = await fetch('api/v1/users/posts');
-                const data = await response.json();
-                if (response.ok) {
-                    const productsSection = document.querySelector('.products');
-
-                    data.forEach(product => {
-                        // Create product card
-                        const productCard = document.createElement('div');
-                        productCard.classList.add('product-card');
-
-                        // Create and append images
-                        product.commodity.images.forEach(image => {
-                            const img = document.createElement('img');
-                            img.src = image;
-                            img.alt = 'Product Image';
-                            productCard.appendChild(img);
-                        });
-
-                        // Add product details
-                        const productName = document.createElement('h2');
-                        productName.textContent = product.title;
-                        productCard.appendChild(productName);
-
-                        const price = document.createElement('p');
-                        price.classList.add('price');
-                        price.textContent = `$${(product.price / 100).toFixed(2)}`;
-                        productCard.appendChild(price);
-
-                        const description = document.createElement('p');
-                        description.textContent = product.description;
-                        description.classList.add('description');
-                        productCard.appendChild(description);
-
-                        // View details button
-                        const viewDetailsBtn = document.createElement('a');
-                        viewDetailsBtn.href = `/product-details.html?id=${product.commodity._id}`;
-                        viewDetailsBtn.classList.add('btn');
-                        viewDetailsBtn.textContent = 'View Details';
-                        productCard.appendChild(viewDetailsBtn);
-
-                        // Append the product card to the products section
-                        productsSection.appendChild(productCard);
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('/api/v1/users/check-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ token })
                     });
-                } else {
-                    console.error('Failed to fetch data');
+                    if (!response.ok) throw new Error('Session check failed');
+                    const data = await response.json();
+
+                    return data;
                 }
+                return null;
             } catch (err) {
-                console.error('Error fetching data:', err);
+                console.error('Error checking session:', err);
+                return null;
             }
+        }
+
+        async function handleNavigation(event) {
+            event.preventDefault();
+            const sessionData = await checkSession();
+
+            if (sessionData && sessionData.valid) {
+                const userId = sessionData.userId;
+                const userRole = sessionData.role || localStorage.getItem('userRole');
+
+                let redirectUrl;
+
+                switch (userRole) {
+                    case 'farmer':
+                        redirectUrl = `/seller-dashboard.html?id=${userId}&g=hasproducttosell`;
+                        break;
+                    case 'admin':
+                        redirectUrl = `/admin-dashboard.html?id=${userId}&g=admin`;
+                        break;
+                    case 'buyer':
+                        redirectUrl = `/buyer-dashboard.html?id=${userId}&g=regularcustomer`;
+                        break;
+                    default:
+                        redirectUrl = 'index.html'; 
+                }
+
+                window.location.href = redirectUrl;
+            } else {
+                window.location.href = 'index.html'; 
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const logo = document.getElementById('logo');
+            const homeLink = document.getElementById('home-link');
+
+            if (logo) {
+                logo.addEventListener('click', handleNavigation);
+            }
+            if (homeLink) {
+                homeLink.addEventListener('click', handleNavigation);
+            }
+
+            (async function loadProducts() {
+                try {
+                    const response = await fetch('api/v1/users/posts');
+                    const data = await response.json();
+                    if (response.ok) {
+                        const productsSection = document.querySelector('.products');
+                        data.forEach(product => {
+                            const productCard = document.createElement('div');
+                            productCard.classList.add('product-card');
+
+                            product.commodity.images.forEach(image => {
+                                const img = document.createElement('img');
+                                img.src = image;
+                                img.alt = 'Product Image';
+                                productCard.appendChild(img);
+                            });
+
+                            const productName = document.createElement('h2');
+                            productName.textContent = product.title;
+                            productCard.appendChild(productName);
+
+                            const price = document.createElement('p');
+                            price.classList.add('price');
+                            price.textContent = `$${(product.price / 100).toFixed(2)}`;
+                            productCard.appendChild(price);
+
+                            const description = document.createElement('p');
+                            description.textContent = product.description;
+                            description.classList.add('description');
+                            productCard.appendChild(description);
+
+                            const viewDetailsBtn = document.createElement('a');
+                            viewDetailsBtn.href = `/product-details.html?id=${product.commodity._id}`;
+                            viewDetailsBtn.classList.add('btn');
+                            viewDetailsBtn.textContent = 'View Details';
+                            productCard.appendChild(viewDetailsBtn);
+
+                            productsSection.appendChild(productCard);
+                        });
+                    } else {
+                        console.error('Failed to fetch data');
+                    }
+                } catch (err) {
+                    console.error('Error fetching data:', err);
+                }
+            })();
         });
     </script>
 

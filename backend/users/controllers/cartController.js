@@ -35,6 +35,7 @@ const addItemToCart = async (req, res) => {
                 commodity: commodityId,
                 quantity: validQuantity,
                 price: commodity.price,
+                image: commodity.images[0]
             });
         }
 
@@ -55,7 +56,7 @@ const getCart = async (req, res) => {
     const userId = req.session.userId;
 
     try {
-        const cart = await Cart.findOne({ user: userId }).populate('items.commodity', 'name price');
+        const cart = await Cart.findOne({ user: userId }).populate('items.commodity', 'name title price images');
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });

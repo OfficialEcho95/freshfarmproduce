@@ -97,8 +97,8 @@
             <p class="product-location" id="productLocation">Loading...</p>
         </div>
         <button id="updateButton" class="btn" onclick="updateProduct()">Update Product</button>
-        <button id="purchaseButton" class="btn" onclick="purchaseProduct()"> Add to Cart </button>
-        <button id="my-cart-button">My Cart</button>
+        <button id="purchaseButton" class="btn" onclick="purchaseProduct()">Add to Cart</button>
+        <button id="my-cart-button" class="btn">My Cart</button>
     </div>
 
     <script>
@@ -116,10 +116,8 @@
                     });
 
                     if (response.ok) {
-                        // Session is valid
                         return true;
                     } else {
-                        // Session is invalid
                         localStorage.removeItem('userId');
                         localStorage.removeItem('token');
                         window.location.href = '/login.html';
@@ -133,7 +131,6 @@
                     return false;
                 }
             } else {
-                // No token found
                 window.location.href = '/login.html';
                 return false;
             }
@@ -151,6 +148,18 @@
             } else {
                 alert('Product ID not found.');
             }
+
+            document.getElementById('my-cart-button').addEventListener('click', async function (event) {
+                event.preventDefault();
+
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    window.location.href = `/cart.html?id=${userId}&myCart`;
+                } else {
+                    alert('User not logged in.');
+                    window.location.href = '/login.html';
+                }
+            });
         });
 
         async function fetchProductDetails(productId) {
@@ -240,46 +249,6 @@
                 });
         }
 
-        document.getElementById('my-cart-button').addEventListener('click', async function (event) {
-            event.preventDefault();
-
-            try {
-                const cartResponse = await fetch('/cart', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                if (!cartResponse.ok) {
-                    console.error('Failed to fetch cart data');
-                    return;
-                }
-
-                const cartData = await cartResponse.json();
-                console.log('Cart Data:', cartData);
-
-                const cartItems = cartData.cart.items;
-                if (!Array.isArray(cartItems)) {
-                    console.error('Cart items data is not an array');
-                    return;
-                }
-
-                const cartList = document.querySelector('.cart-list');
-                cartList.innerHTML = '';
-
-                let subTotal = 0;
-                let itemCount = 0;
-
-                for (const item of cartItems) {
-                    const productId = item.commodity;
-                    // Fetch and display cart items
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        });
     </script>
 </body>
 

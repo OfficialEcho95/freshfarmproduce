@@ -17,6 +17,12 @@ const cartItemSchema = new Schema({
         required: true,
         min: 0,
     },
+    image: {
+        type: String,
+    },
+    title :{
+        type: String,
+    }
 });
 
 const cartSchema = new Schema({

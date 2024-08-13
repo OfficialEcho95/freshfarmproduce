@@ -9,6 +9,7 @@ const getAdminNameFromSession = async (req) => {
     try {
         const adminId = req.session.adminId.toString();
 
+        console.log(adminId);
         const admin = await Admin.findById(adminId);
 
         if (!admin) {

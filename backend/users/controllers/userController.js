@@ -80,7 +80,6 @@ const loginUser = async (req, res) => {
 //function to update user data
 const updateUserData = async (req, res) => {
     try {
-        console.log("Now starting profile update");
         const { data, password } = req.body;
         const userId = req.session.userId;
         
@@ -161,7 +160,7 @@ const checkSession = async (req, res) => {
             return res.status(401).json({ valid: false, message: 'User not found' });
         }
 
-        // Optionally, you can include more user details if needed
+        // Optional display of more user details which might be needed in the backend
         res.status(200).json({ valid: true, userId: user._id, role: user.role });
     } catch (error) {
         console.error('Error checking session:', error);

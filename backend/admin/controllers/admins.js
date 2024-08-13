@@ -24,7 +24,6 @@ const registerAdmin = async (req, res) => {
         if (emailExists) {
             return res.status(400).json({ message: `${email} already exists` });
         }
-        // Ensure password is defined and non-empty
         if (!password) {
             return res.status(400).json({ message: "Password is required" });
         }
@@ -47,31 +46,31 @@ const registerAdmin = async (req, res) => {
 
 // functions to log in admin
 const loginAdmin = async (req, res) => {
-    // try {
-    //     const { email, password } = req.body;
-    //     const user = await Admin.findOne({ email });
+    try {
+        const { email, password } = req.body;
+        const user = await Admin.findOne({ email });
 
-    //     if (!user) {
-    //         return res.status(403).json({ message: "Please enter a correct email" });
-    //     }
+        if (!user) {
+            return res.status(403).json({ message: "Please enter a correct email" });
+        }
 
-    //     const correctPassword = await bcrypt.compare(password, user.password);
+        const correctPassword = await bcrypt.compare(password, user.password);
 
-    //     if (!correctPassword) {
-    //         return res.status(403).json({ message: "Please enter a correct password" });
-    //     }
+        if (!correctPassword) {
+            return res.status(403).json({ message: "Please enter a correct password" });
+        }
+        
+        const token = generateToken(user._id);
+        req.session.adminId = user._id.toString(); 
+        req.session.token = token;
+        await req.session.save();
 
-    //     const token = generateToken(user._id);
-    //     req.session.adminId = user._id;
-    //     req.session.token = token;
-    //     await req.session.save();
-
-    //     const usernameByEmail = await Admin.findById(req.session.adminId);
-    //     return res.status(201).json({ token, message: `${usernameByEmail.name} is logged in as an admin`, user });
-    // } catch (error) {
-    //     console.error("Error logging in admin:", error);
-    //     return res.status(500).json({ message: "Internal server error" });
-    // }
+        const usernameByEmail = await Admin.findById(req.session.adminId);
+        return res.status(201).json({ token, message: `${usernameByEmail.name} is logged in as an admin`, user });
+    } catch (error) {
+        console.error("Error logging in admin:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 

@@ -122,6 +122,7 @@ const verifyPayment = async (req, res) => {
                     for (let sellerId of sellerIds) {
                         const seller = await User.findById(sellerId);
                         if (seller) {
+                            
                             seller.completedSales += 1;
                             await seller.save();
                         }

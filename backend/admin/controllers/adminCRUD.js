@@ -8,23 +8,23 @@ const getAdminNameFromSession = require('../../middlewares/adminsession');
 // Function to let admin create new user
 const adminCreateUser = async (req, res) => {
     const { name, email, password } = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (user) {
-        res.status(404).json({ message: `${email} exists`})
+        res.status(404).json({ message: `${email} exists` })
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
         name,
         password: hashedPassword,
-        email, 
+        email,
         role: 'buyer'
     });
 
     await newUser.save();
     const requestBy = (req.session.adminId).toString();
-    const usernameByEmail = await Admin.findById( requestBy );
-    res.status(201).json({ message: `${name} was created by administrator ${usernameByEmail.name}`});
-}
+    const usernameByEmail = await Admin.findById(requestBy);
+    return res.status(201).json({ message: `${name} was created by administrator ${usernameByEmail.name}` });
+};
 
 //function to let admin update user
 const adminUpdateUser = async (req, res) => {
@@ -47,14 +47,14 @@ const adminUpdateUser = async (req, res) => {
                     user.password = hashedPassword;
                 } else {
                     // Update other fields directly
-                        user[key] = req.body[key];                 
+                    user[key] = req.body[key];
                 }
             }
         }
 
         await user.save();
         const requestBy = (req.session.adminId).toString();
-        const usernameByEmail = await Admin.findById( requestBy );
+        const usernameByEmail = await Admin.findById(requestBy);
 
         res.status(200).json({ message: `${user.name} updated by ${usernameByEmail.name}` });
 
@@ -89,14 +89,14 @@ const adminViewUserDetails = async (req, res) => {
 
 //function for admin to delete user account
 const adminDeleteUser = async (req, res) => {
-    const {email} = req.body;
+    const { email } = req.body;
     if (!email) {
-        res.status(404).json({message: "Enter a correct email"});
+        res.status(404).json({ message: "Enter a correct email" });
     }
     const checkemail = await User.findOneAndDelete(email);
     const adminId = req.session.adminId;
     const admin = await Admin.findById(adminId);
-    res.status(203).json({message: `${checkemail.name}, has been deleted permanently by ", ${admin.name}`});
+    res.status(203).json({ message: `${checkemail.name}, has been deleted permanently by, ${admin.name}` });
 }
 
 //Moderate User Content: Admins can reject user-generated content.
@@ -125,5 +125,8 @@ const adminDeleteUserPost = async (req, res) => {
     }
 };
 
-module.exports = { adminCreateUser, adminUpdateUser, adminViewUserDetails, adminDeleteUser,
-            adminDeleteUserPost}
+
+module.exports = {
+    adminCreateUser, adminUpdateUser, adminViewUserDetails, adminDeleteUser,
+    adminDeleteUserPost
+}

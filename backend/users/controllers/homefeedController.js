@@ -8,7 +8,7 @@ const getPostsTimeBasedRotation = async () => {
 
         const result = [];
         const eligiblePosts = allPosts.filter(post => {
-            const lastDisplayedAt = new Date(post.lastDisplayedAt || 0); // Default to epoch if not set
+            const lastDisplayedAt = new Date(post.lastDisplayedAt || 0); // Default to epoch(algorithm) if not set
             const timeDifference = currentTime - lastDisplayedAt.getTime();
 
             // Include posts that have never been displayed (lastDisplayedAt is epoch) or have surpassed the interval
@@ -25,7 +25,6 @@ const getPostsTimeBasedRotation = async () => {
         // Display eligible posts
         eligiblePosts.forEach(post => {
             result.push(post);
-            // Update last displayed time to current time
             post.lastDisplayedAt = currentTime;
             post.save();
         });

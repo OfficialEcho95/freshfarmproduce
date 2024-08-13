@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../admin/models/admin');
+const Admin = require('../admin/models/admin');
 const UserFarmer = require('../users/models/user')
 
 const generateToken = (userId) => {
@@ -7,9 +7,11 @@ const generateToken = (userId) => {
 };
 
 
+//middleware to authenticate user
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = req.session.token || (authHeader && authHeader.split(' ')[1]);
+
 
     if (!token) {
         return res.status(401).json({ error: 'Unauthorized - missing token' });
@@ -18,6 +20,8 @@ const authenticateToken = (req, res, next) => {
     try {
         const user = jwt.verify(token, process.env.AUTH_KEY);
 
+        console.log(user.userId);
+        console.log(req.session.adminId)
         if (req.session.userId !== user.userId) {
             return res.status(401).json({ error: 'Unauthorized - invalid user' });
         }
@@ -33,13 +37,43 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
+//middleware to authenticate admin
+const adminAuthenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = req.session.token || (authHeader && authHeader.split(' ')[1]);
+
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized - missing token' });
+    }
+
+    try {
+        const user = jwt.verify(token, process.env.AUTH_KEY);
+
+        if (req.session.adminId !== user.userId) {
+            return res.status(401).json({ error: 'Unauthorized - invalid user' });
+        }
+
+        req.user = user;
+        next();
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: 'Unauthorized - token expired' });
+        } else {
+            return res.status(401).json({ error: 'Unauthorized - invalid token' });
+        }
+    }
+}
 
 //middleware for admin access
-const adminAccess = (req, res, next) => {
-    if (req.user && req.user.role !== 'admin') {
-        res.send({ message: "Access forbidden"});
+const adminAccess = async (req, res, next) => {
+    const userId = req.user.userId;
+    const user = await Admin.findById(userId);
+    req.user = user;
+    if (!user || user.role !== 'admin') {
+        return res.status(403).json({ message: "Access forbidden - admin only" });
     }
-    return next()
+    return next();
 }
 
 
@@ -49,14 +83,14 @@ completed orders
 const authorizeFarmerOrAdmin = async (req, res, next) => {
     try {
         const { user } = req;
-        const { id } = req.params;
+        const { farmerId } = req.params;
 
         const dbUser = await UserFarmer.findById(user.userId);
         if (!dbUser) {
             return res.status(404).json({ message: 'User not found.' });
         }
 
-        if (dbUser.role === 'admin' || dbUser._id.toString() === id) {
+        if (dbUser.role === 'admin' || dbUser._id.toString() === farmerId) {
             next();
         } else {
             res.status(403).json({ message: 'Access denied.' });
@@ -68,4 +102,4 @@ const authorizeFarmerOrAdmin = async (req, res, next) => {
 };
 
 
-module.exports = { authenticateToken, generateToken, adminAccess, authorizeFarmerOrAdmin }
+module.exports = { authenticateToken, adminAuthenticateToken, generateToken, adminAccess, authorizeFarmerOrAdmin }

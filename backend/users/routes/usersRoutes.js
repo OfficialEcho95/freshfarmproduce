@@ -3,10 +3,17 @@ const path = require('path');
 const uploadImages = require('../../../multerUploads');
 const router = express.Router();
 const { authenticateToken, authorizeFarmerOrAdmin } = require('../../middlewares/userAuthentication');
-const { getCommoditiesByFarmer, addCommodity, buyCommodity, verifyPaymentHandler, deleteCommodityByName, updateCommodity, getCompleteOrdersByFarmer, searchCommodities, getCommodityById, salesReport } = require('../controllers/farmerController');
+const {
+    getCommoditiesByFarmer, addCommodity, buyCommodity,
+    deleteCommodityByName, updateCommodity,
+    getCompleteOrdersByFarmer, searchCommodities,
+    getCommodityById, salesReport, mostCompletedSales,
+    mostSoldProduct
+} = require('../controllers/farmerController');
+
 const { registerUser, updateUserData, loginUser, loginAdmin, logoutUser, checkSession } = require('../controllers/userController');
 const { verifyPayment } = require('../../../payment/paymentController');
-const { userPurchases } = require('../controllers/buyerController');
+const { userPurchases, mostPurchasedProduct, topPurchasedProducts } = require('../controllers/buyerController');
 const { getPosts } = require('../controllers/homefeedController');
 const { addItemToCart, getCart, updateCartItem, removeCartItem, clearCart } = require('../controllers/cartController');
 
@@ -20,11 +27,15 @@ router.post('/check-session', checkSession);
 router.get('/logout-user', logoutUser);
 router.put('/update-user-data', updateUserData);
 router.get('/farmer/:farmerId/commodities', getCommoditiesByFarmer);
+router.get('/most-completed-sales/:userId', mostCompletedSales);
+router.get('/most-sold-product-by-vendor/:userId', mostSoldProduct)
 router.post('/add-commodity', uploadImages, addCommodity);
 router.post('/buy-commodity', buyCommodity);
 router.delete('/delete-commodity/:name', deleteCommodityByName);
 router.put('/update-commodity/:id/:comId', authorizeFarmerOrAdmin, updateCommodity);
 router.get('/search', searchCommodities);
+router.get('/most-purchased-product-by-buyer/:userId', mostPurchasedProduct);
+router.get('/top-purchased-products/:userId', topPurchasedProducts);
 router.get('/commodity-by-id/:id', getCommodityById);
 router.get('/user-purchases/:id', authorizeFarmerOrAdmin, userPurchases);
 router.get('/get-farmer-complete-orders/:farmerId', authorizeFarmerOrAdmin, getCompleteOrdersByFarmer)

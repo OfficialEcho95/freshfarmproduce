@@ -69,17 +69,7 @@ const addCommodity = async (req, res) => {
 //route to purchase a commodity
 const buyCommodity = async (req, res) => {
     try {
-        const { commodityId, quantityPurchased } = req.body;
-
-        const commodity = await Commodity.findById(commodityId);
-
-        if (!commodity) {
-            return res.status(404).json({ message: "Commodity not found" });
-        }
-
-        if (commodity.quantityAvailable < quantityPurchased) {
-            return res.status(400).json({ message: "Not enough quantity available" });
-        }
+        const { items } = req.body;
 
         const userId = req.session.userId;
         const user = await User.findById(userId);
@@ -88,27 +78,44 @@ const buyCommodity = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (!user) {
-            res.status(402).json({ message: "User not found" });
-        }
+        let totalPrice = 0;
+        const orderItems = [];
 
-        const totalPrice = commodity.price * quantityPurchased;
+        for (const item of items) {
+            const { commodityId, quantityPurchased } = item;
 
-        //create and save order
-        const order = new Order({
-            customer: user._id,
-            items: [{
+            const commodity = await Commodity.findById(commodityId);
+
+            if (!commodity) {
+                return res.status(404).json({ message: `Commodity with ID ${commodityId} not found` });
+            }
+
+            if (commodity.quantityAvailable < quantityPurchased) {
+                return res.status(400).json({ message: `Not enough quantity available for commodity with ID ${commodityId}` });
+            }
+
+            totalPrice += commodity.price * quantityPurchased;
+
+            orderItems.push({
                 commodity: commodityId,
                 quantity: quantityPurchased,
                 price: commodity.price,
-            }],
+                seller: commodity.farmer,
+                image: commodity.images[0],
+            });
+        }
+
+        // Create and save the order
+        const order = new Order({
+            customer: user._id,
+            items: orderItems,
             totalAmount: totalPrice,
             paymentStatus: 'pending',
             deliveryAddress: user.deliveryAddress
         });
         await order.save();
 
-        //initialize payment
+        // Initialize payment
         try {
             const paymentData = await initializePayment(user.email, totalPrice * 100, order._id);
             res.status(200).json({
@@ -118,12 +125,12 @@ const buyCommodity = async (req, res) => {
                 orderId: order._id,
             });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             res.status(400).json({ message: error.message });
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error encountered purchasing commodity" });
+        res.status(500).json({ message: "Error encountered purchasing commodities" });
     }
 };
 
@@ -180,7 +187,6 @@ const updateCommodity = async (req, res) => {
         res.status(500).json({ message: "Error encountered updating commodity" });
     }
 };
-
 
 //route to find farmer
 const getCommoditiesByFarmer = async (req, res) => {
@@ -252,26 +258,6 @@ const searchCommodities = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-//all complete orders by a seller
-const getCompleteOrdersByFarmer = async (req, res) => {
-    try {
-        const { farmerId } = req.params;
-        const farmer = await User.findById(farmerId);
-        if (!farmer) {
-            return res.status(404).json({ message: 'Farmer not found' });
-        }
-
-        // Find orders where the payment status is 'paid' and the commodity belongs to the farmer
-        const orders = await Order.find({
-            paymentStatus: 'paid'
-        }).populate('items.commodity').populate('customer');
-
-        res.status(200).json(orders);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
 
 //route to get the all complete sales for sellers
 const mostCompletedSales = async (req, res) => {
@@ -311,6 +297,85 @@ const mostCompletedSales = async (req, res) => {
     } catch (error) {
         console.error('Error fetching top farmers:', error);
         res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// route to get the most sold prodcts by vendors
+const mostSoldProduct = async (req, res) => {
+    try {
+        const { farmerId } = req.params;
+
+        if (!farmerId) {
+            return res.status(404).json({ message: "Farmer not found" });
+        }
+
+        const allOrders = await Order.find({ "items.seller": farmerId, "paymentStatus": "paid" });
+
+        if (!allOrders.length) {
+            return res.status(404).json({ message: "No completed sales found" });
+        }
+
+        const productSales = {};
+
+        // Tally the quantities sold for each product
+        allOrders.forEach(order => {
+            order.items.forEach(item => {
+                if (item.seller.toString() === farmerId) {
+                    if (!productSales[item.commodity]) {
+                        productSales[item.commodity] = item.quantity;
+                    } else {
+                        productSales[item.commodity] += item.quantity;
+                    }
+                }
+            });
+        });
+
+        // Find the product(s) with the highest sales
+        let mostSoldProducts = [];
+        let maxSales = 0;
+
+        for (const [productId, sales] of Object.entries(productSales)) {
+            if (sales > maxSales) {
+                maxSales = sales;
+                mostSoldProducts = [productId];
+            } else if (sales === maxSales) {
+                mostSoldProducts.push(productId);
+            }
+        }
+
+        if (mostSoldProducts.length === 0) {
+            return res.status(404).json({ message: "No sales data available" });
+        }
+
+        // populate product details, i might delete later
+        const mostSoldProductDetails = await Commodity.find({ _id: { $in: mostSoldProducts } });
+
+        res.status(200).json({ mostSoldProducts: mostSoldProductDetails, maxSales });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching most sold products" });
+    }
+};
+
+
+//all complete orders by a seller
+const getCompleteOrdersByFarmer = async (req, res) => {
+    try {
+        const { farmerId } = req.params;
+        const farmer = await User.findById(farmerId);
+        if (!farmer) {
+            return res.status(404).json({ message: 'Farmer not found' });
+        }
+
+        // Find orders where the payment status is 'paid' and the commodity belongs to the farmer
+        const orders = await Order.find({
+            paymentStatus: 'paid'
+        }).populate('items.commodity').populate('customer');
+
+        res.status(200).json(orders);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
     }
 };
 
@@ -391,15 +456,14 @@ const salesReport = async (req, res) => {
     }
 };
 
-// route to get the user reports and behaviors
+// route to get the user reports and behaviors, might be implemented later
 
 
-
-// route to get the invertory reports
+// route to get the invertory reports, might also be implemented later
 module.exports = {
-    router,salesReport, 
+    router, salesReport,
     addCommodity, buyCommodity, getCommoditiesByFarmer,
     getCommodityById, getAllCommodities, updateCommodity,
     updateCommodity, deleteCommodityByName, searchCommodities,
-    getCompleteOrdersByFarmer, mostCompletedSales
+    getCompleteOrdersByFarmer, mostCompletedSales, mostSoldProduct
 };

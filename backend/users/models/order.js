@@ -27,7 +27,7 @@ const OrderSchema = new Schema({
             type: [String],
             default: [],
         },
-        seller: {
+        farmer: {
             type: Schema.Types.ObjectId,
             ref: 'User',
             required: true,

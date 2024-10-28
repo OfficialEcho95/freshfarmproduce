@@ -60,12 +60,6 @@ const userSchema = new Schema({
         },
         trim: true,
     },
-    products: {
-        type: [String],
-        function () {
-            return this.role === 'farmer';
-        },
-    },
     deliveryAddress: {
         type: String,
         function () {
@@ -88,6 +82,10 @@ const userSchema = new Schema({
         type: Number,
         default: 0,
     },
+    commodities: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Commodity',
+    }],
 });
 
 // Middleware to handle updatedAt on save and update

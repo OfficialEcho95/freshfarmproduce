@@ -99,7 +99,6 @@ const topNProducts = function (productPurchases, n) {
 const topPurchasedProducts = async (req, res) => {
     try {
         const { userId } = req.params;
-        console.log(userId)
         const user = await User.findById(userId);
 
         if (!user) {

@@ -2,6 +2,7 @@ const { generateToken } = require('../../middlewares/userAuthentication');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 const Admin = require('../../admin/models/admin');
+const redisClient = require('../../../redisClient');
 
 // Helper function to capitalize the first letter of an email
 function capitalizeEmail(email) {
@@ -21,6 +22,7 @@ const registerUser = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     try {
+        
         const emailExists = await User.findOne({ email });
         if (emailExists) {
             return res.status(409).json({ message: `${email} already exists` });
@@ -36,6 +38,14 @@ const registerUser = async (req, res) => {
         });
 
         await newUser.save();
+
+
+        // Publish an event to the Redis channel
+        await redisClient.publish('user-registered', JSON.stringify({
+            email: newUser.email,
+            subject: 'Welcome!',
+            text: 'Thank you for registering!'
+        }));
 
         if (newUser.role === 'admin') {
             const newAdmin = new Admin({
@@ -57,24 +67,36 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(404).json({ message: "Email does not exist" });
         }
+
         const comparePassword = await bcrypt.compare(password, user.password);
         if (!comparePassword) {
             return res.status(402).json({ message: "Incorrect password" });
         }
+
+        // Update lastLogin to current time
+        user.lastLogin = new Date();
+        await user.save();
+
         const token = generateToken(user._id);
-        req.session.userId = (user._id).toString();
+        req.session.userId = user._id.toString();
         req.session.token = token;
 
         await req.session.save();
-        return res.status(200).json({ message: `${user.name} logged in successfully`, id: `${user._id}`, user, token });
+
+        // Create a new object without the password
+        const { password: _, ...userWithoutPassword } = user.toObject(); // Converting Mongoose document to plain object and exclude password
+
+        return res.status(200).json({ message: `${user.name} logged in successfully`, user: userWithoutPassword, token });
     } catch (err) {
-        console.log(err)
+        console.log(err);
         res.status(500).json({ message: "Error encountered logging in" });
     }
-}
+};
+
 
 
 //function to update user data
@@ -82,7 +104,7 @@ const updateUserData = async (req, res) => {
     try {
         const { data, password } = req.body;
         const userId = req.session.userId;
-        
+
         if (!data && !password) {
             return res.status(400).json({ message: "No data provided" });
         }

@@ -6,8 +6,10 @@ const Post = require('../models/post');
 const { createObjectCsvWriter } = require('csv-writer');
 const paginate = require('express-paginate');
 const express = require('express');
+const redisClient = require('../../../redisClient');
 const router = express.Router();
 router.use(paginate.middleware(20, 5000)); // 20 items per page, max limit of 5000
+const cron = require('node-cron');
 
 
 
@@ -24,6 +26,11 @@ const addCommodity = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        // to confirm that user is infact eligible to add products
+        if (user.role !== 'farmer') {
+            return res.status(403).json({ message: "Forbidden - user is not a farmer" });
         }
 
         const { title, description, price, quantityAvailable, categories, location } = req.body;
@@ -46,6 +53,10 @@ const addCommodity = async (req, res) => {
         });
 
         await newCommodity.save();
+
+        // Update the user's commodities array
+        user.commodities.push(newCommodity._id);
+        await user.save();
 
         const newPost = new Post({
             commodity: newCommodity._id,
@@ -304,12 +315,11 @@ const mostCompletedSales = async (req, res) => {
 const mostSoldProduct = async (req, res) => {
     try {
         const { farmerId } = req.params;
-
         if (!farmerId) {
             return res.status(404).json({ message: "Farmer not found" });
         }
 
-        const allOrders = await Order.find({ "items.seller": farmerId, "paymentStatus": "paid" });
+        const allOrders = await Order.find({ "items.farmer": farmerId, "paymentStatus": "paid" });
 
         if (!allOrders.length) {
             return res.status(404).json({ message: "No completed sales found" });
@@ -320,7 +330,7 @@ const mostSoldProduct = async (req, res) => {
         // Tally the quantities sold for each product
         allOrders.forEach(order => {
             order.items.forEach(item => {
-                if (item.seller.toString() === farmerId) {
+                if (item.farmer.toString() === farmerId) {
                     if (!productSales[item.commodity]) {
                         productSales[item.commodity] = item.quantity;
                     } else {
@@ -388,14 +398,14 @@ const salesReport = async (req, res) => {
 
         const orders = await Order.find({ paymentStatus: 'paid' })
             .populate('items.commodity')
-            .populate('items.seller')
+            .populate('items.farmer')
             .skip(skip)
             .limit(limit);
 
         const data = orders.map(order => {
             return order.items.map(item => ({
                 itemName: item.commodity.name,
-                sellerName: item.seller.name,
+                sellerName: item.farmer.name,
                 quantity: item.quantity,
                 amountPaid: item.price * item.quantity,
                 orderId: order._id,
@@ -460,6 +470,55 @@ const salesReport = async (req, res) => {
 
 
 // route to get the invertory reports, might also be implemented later
+
+// products/commodities tracker
+const productsTracker = async (req, res) => {
+    try {
+        const lowCommodities = [];
+        const commodities = await Commodity.find().populate('farmer');
+
+        if (!commodities || commodities.length === 0) {
+            return res.status(404).json({ message: "No resources found" });
+        }
+
+        // Identify commodities running low
+        commodities.forEach(commodity => {
+            if (commodity.quantityAvailable <= 40) {
+                lowCommodities.push({
+                    title: commodity.title,
+                    quantityAvailable: commodity.quantityAvailable,
+                    email: commodity.farmer.email,
+                });
+            }
+        });
+
+        // Publish events to Redis for each low commodity
+        const publishPromises = lowCommodities.map((comm) =>
+            redisClient.publish('running low on product', JSON.stringify({
+                email: comm.email,
+                subject: `Running low on product: ${comm.title}`,
+                text: `The product "${comm.title}" is running low with only ${comm.quantityAvailable} items left.`,
+            }))
+        );
+
+        await Promise.all(publishPromises);
+
+        return res.status(200).json({
+            message: "Checked all products and published notifications for low commodities.",
+            lowCommodities,
+        });
+    } catch (error) {
+        console.error('Error tracking products:', error);
+        res.status(500).json({ message: "An error occurred while tracking products." });
+    }
+};
+
+// Scheduling the function to run every 24 hours
+cron.schedule('0 0 * * *', () => {
+    console.log("Running productsTracker job...");
+    productsTracker();
+});
+
 module.exports = {
     router, salesReport,
     addCommodity, buyCommodity, getCommoditiesByFarmer,

@@ -20,8 +20,6 @@ const authenticateToken = (req, res, next) => {
     try {
         const user = jwt.verify(token, process.env.AUTH_KEY);
 
-        console.log(user.userId);
-        console.log(req.session.adminId)
         if (req.session.userId !== user.userId) {
             return res.status(401).json({ error: 'Unauthorized - invalid user' });
         }

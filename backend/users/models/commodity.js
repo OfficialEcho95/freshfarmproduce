@@ -3,8 +3,9 @@ const { Schema } = mongoose;
 
 const CommoditySchema = new Schema({
     farmer: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
+        required: true
     },
     title: {
         type: String,

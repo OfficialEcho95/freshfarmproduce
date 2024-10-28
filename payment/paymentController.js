@@ -2,16 +2,29 @@ const https = require('https');
 const Order = require('../backend/users/models/order');
 const Commodity = require('../backend/users/models/commodity');
 const User = require('../backend/users/models/user');
+const redisClient = require('../redisClient');
 
 
 //route to initialize payment
-const initializePayment = (email, amount, orderId) => {
-    return new Promise((resolve, reject) => {
+const initializePayment = async (req, res) => {
+    const { orderId } = req.body;
+
+    try {
+        const order = await Order.findById(orderId).populate('customer', 'email');
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        const email = order.customer.email;
+        const amount = order.totalAmount * 100; // Convert to kobo for Paystack
+
         const params = JSON.stringify({
             email,
             amount,
             metadata: { orderId },
         });
+
 
         const options = {
             hostname: 'api.paystack.co',
@@ -32,31 +45,34 @@ const initializePayment = (email, amount, orderId) => {
             });
 
             paystackRes.on('end', () => {
-                try {
-                    const response = JSON.parse(data);
-                    console.log('Paystack Response:', response);
-                    if (response.status) {
-                        resolve({
-                            authorization_url: response.data.authorization_url,
-                            access_code: response.data.access_code,
-                        });
-                    } else {
-                        reject(new Error(`Payment initialization failed: ${response.message}`));
-                    }
-                } catch (error) {
-                    reject(new Error('Failed to parse response from Paystack'));
+                const response = JSON.parse(data);
+                if (response.status) {
+                    res.status(200).json({
+                        authorization_url: response.data.authorization_url,
+                        access_code: response.data.access_code,
+                        message: "Payment initialized successfully",
+                    });
+                } else {
+                    console.log(response.data);
+                    res.status(400).json({ message: response.message });
                 }
             });
-        }).on('error', error => {
-            reject(error);
+        });
+
+        paystackReq.on('error', error => {
+            console.error('Paystack request error:', error);
+            res.status(500).json({ message: "Error initializing payment" });
         });
 
         paystackReq.write(params);
         paystackReq.end();
-    });
-    //At this point we call the payment verfication in
-    //payment controller to verify payment
+
+    } catch (error) {
+        console.error('Error initializing payment:', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
+
 
 
 // This route will verify and update the quantity of that commodity left
@@ -88,11 +104,9 @@ const verifyPayment = async (req, res) => {
             try {
                 const response = JSON.parse(data);
 
+                const orderId = response.data.metadata.orderId;
                 if (response.status && response.data.status === 'success') {
-                    const orderId = response.data.metadata.orderId;
-
-                    const order = await Order.findById(orderId);
-
+                    const order = await Order.findById(orderId).populate('customer', 'email');
                     if (!order) {
                         return res.status(404).json({ message: "Order not found" });
                     }
@@ -106,34 +120,56 @@ const verifyPayment = async (req, res) => {
                     };
                     await order.save();
 
+
+                    /**
+                     * adding a redis event tracker to add this to the job queue and send the user the notification
+                     * Publish an event to the Redis channel
+                    **/
+                    await redisClient.publish('order-confirmation', JSON.stringify({
+                        email: order.customer.email,
+                        subject: `Your Order ${order._id.toString()}`,
+                        text: `Your Order has been shipped!\n The following order will arrive in ${new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString()}`
+                    }));
+
+
                     // Update inventory and completed sales for sellers
                     const sellerIds = new Set();
-                    for (let item of order.items) {
-                        const commodity = await Commodity.findById(item.commodity);
-                        if (commodity) {
+
+                    try {
+                        const updateCommodityPromises = order.items.map(async (item) => {
+                            const commodity = await Commodity.findById(item.commodity);
+                            if (!commodity) {
+                                throw new Error(`Commodity not found for ID: ${item.commodity}`);
+                            }
                             commodity.quantityAvailable -= item.quantity;
-                            await commodity.save();
-                        }
+                            return commodity.save();
+                        });
 
-                        sellerIds.add(item.seller);
-                    }
+                        await Promise.all(updateCommodityPromises);
 
-                    // Increment completed sales for each seller
-                    for (let sellerId of sellerIds) {
-                        const seller = await User.findById(sellerId);
-                        if (seller) {
-                            
+                        // Collect seller IDs after commodities have been updated
+                        order.items.forEach(item => sellerIds.add(item.farmer));
+
+                        const updateSellerPromises = Array.from(sellerIds).map(async (sellerId) => {
+                            const seller = await User.findById(sellerId);
+                            if (!seller) {
+                                throw new Error(`Seller not found for ID: ${sellerId}`);
+                            }
                             seller.completedSales += 1;
                             await seller.save();
-                        }
-                    }
+                        });
 
-                    res.status(200).json({ message: "Payment verified and order updated", order });
+                        await Promise.all(updateSellerPromises);
+                    } catch (error) {
+                        console.error('Error updating commodities or sellers:', error);
+                    }
+                    return res.status(200).json({ message: "Payment verified and order updated", order });
                 } else {
-                    res.status(400).json({ message: "Payment verification failed", data: response.data });
+                    console.log(response.data);
+                    return res.status(400).json({ message: "Payment verification failed", data: response.data });
                 }
             } catch (error) {
-                console.error('Error parsing JSON response:', error);
+                // console.error('Error parsing JSON response:', error);
                 res.status(500).json({ message: "Error parsing response from Paystack" });
             }
         });
@@ -143,6 +179,6 @@ const verifyPayment = async (req, res) => {
     });
 
     paystackReq.end();
-};
+}
 
 module.exports = { initializePayment, verifyPayment };

@@ -1,5 +1,6 @@
 const Cart = require('../models/cart');
 const Commodity = require('../models/commodity');
+const Order = require('../models/order');
 
 // Add item to cart
 const addItemToCart = async (req, res) => {
@@ -14,7 +15,7 @@ const addItemToCart = async (req, res) => {
     }
 
     try {
-        const commodity = await Commodity.findById(commodityId);
+        const commodity = await Commodity.findById(commodityId).populate('farmer');
 
         if (!commodity) {
             return res.status(404).json({ message: 'Commodity not found' });
@@ -32,6 +33,7 @@ const addItemToCart = async (req, res) => {
             cart.items[itemIndex].quantity += validQuantity;
         } else { // Add new items to cart
             cart.items.push({
+                farmer: commodity.farmer,
                 commodity: commodityId,
                 quantity: validQuantity,
                 price: commodity.price,
@@ -43,28 +45,9 @@ const addItemToCart = async (req, res) => {
 
         await cart.save();
 
-        res.status(200).json({ message: 'Item added to cart', cart });
+        return res.status(200).json({ message: 'Item added to cart', cart });
     } catch (error) {
         console.error('Error adding item to cart:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-
-// Get cart
-const getCart = async (req, res) => {
-    const userId = req.session.userId;
-
-    try {
-        const cart = await Cart.findOne({ user: userId }).populate('items.commodity', 'name title price images');
-
-        if (!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
-        }
-
-        res.status(200).json({ cart });
-    } catch (error) {
-        console.error('Error fetching cart:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -104,13 +87,81 @@ const updateCartItem = async (req, res) => {
         await cart.save();
 
         // Send response
-        res.status(200).json({ message: 'Cart item updated', cart });
+        return res.status(200).json({ message: 'Cart item updated', cart });
     } catch (error) {
         console.error('Error updating cart item:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
 
+// Get cart
+const getCart = async (req, res) => {
+    const userId = req.session.userId;
+
+    try {
+        const cart = await Cart.findOne({ user: userId }).populate({path: 'items.commodity', populate: ({
+            path: 'farmer', select: "name email"
+        })} );
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+        res.status(200).json(cart);
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+// function to checkout the carts
+const checkoutCart = async (req, res) => {
+    const userId = req.session.userId;
+
+    try {
+        const cart = await Cart.findOne({ user: userId }).populate({
+            path: 'items.commodity',
+            populate: { path: 'farmer', select: 'name email' }
+        });
+
+        if (!cart || cart.items.length === 0) {
+            return res.status(404).json({ message: "Your cart is empty!" });
+        }
+
+        let totalAmount = 0;
+        const orderItems = cart.items.map(item => {
+            totalAmount += item.quantity * item.commodity.price;
+
+            return {
+                commodity: item.commodity._id,
+                quantity: item.quantity,
+                price: item.commodity.price,
+                images: item.commodity.images,
+                farmer: item.commodity.farmer._id,
+            };
+        });
+
+        const newOrder = new Order({
+            customer: userId,
+            items: orderItems,
+            totalAmount,
+            deliveryAddress: "house",
+            paymentStatus: 'pending',
+        });
+
+        const savedOrder = await newOrder.save();
+
+        await Cart.findOneAndDelete({ user: userId });
+
+        res.status(200).json({
+            message: "Checkout successful",
+            orderId: savedOrder._id,
+            totalAmount: savedOrder.totalAmount,
+        });
+    } catch (error) {
+        console.error('Error during checkout:', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 //remove from cart
 const removeCartItem = async (req, res) => {
@@ -143,7 +194,6 @@ const removeCartItem = async (req, res) => {
     }
 };
 
-
 //clear cart
 const clearCart = async (req, res) => {
     const userId = req.session.userId;
@@ -167,7 +217,6 @@ const clearCart = async (req, res) => {
     }
 };
 
-
 module.exports = {
-    addItemToCart, clearCart, removeCartItem, updateCartItem, getCart
+    addItemToCart, clearCart, removeCartItem, updateCartItem, getCart, checkoutCart
 };

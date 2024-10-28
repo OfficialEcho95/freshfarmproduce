@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const cartItemSchema = new Schema({
     commodity: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Commodity',
         required: true,
     },
@@ -22,6 +22,11 @@ const cartItemSchema = new Schema({
     },
     title :{
         type: String,
+    },
+    farmer: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 

@@ -27,6 +27,11 @@ jobs:
 
     - name: Docker Compose Up
       run: docker-compose up --build -d
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        REDIS_HOST: ${{ secrets.REDIS_HOST }}
+        REDIS_PORT: ${{ secrets.REDIS_PORT }}
+        NODE_ENV: ${{ secrets.NODE_ENV }}
 
     - name: Wait for services to be ready
       run: sleep 10

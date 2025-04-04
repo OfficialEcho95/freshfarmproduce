@@ -22,14 +22,21 @@ jobs:
     - name: Set up Docker Compose
       uses: ndeloof/setup-docker-compose@v1
 
-    - name: Run Docker Compose
-      run: docker-compose -f docker-compose.test.yml up --build -d
+    - name: Docker Compose Up
+      run: docker-compose up --build -d
 
-    - name: Wait for services
+    - name: Wait for services to be ready
       run: sleep 10
 
+    - name: List running containers
+      run: docker ps -a
+
+    - name: Show logs for debugging
+      run: docker-compose logs
+
     - name: Run tests
-      run: docker-compose -f docker-compose.test.yml exec -T <test-service> npm test
+      run: docker-compose exec -T app npm test
 
     - name: Tear down
-      run: docker-compose -f docker-compose.test.yml down
+      if: always()
+      run: docker-compose down

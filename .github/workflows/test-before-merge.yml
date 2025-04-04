@@ -3,7 +3,7 @@ name: Run Tests Before Merge
 on:
   pull_request:
     branches:
-      - main  # or your default branch
+      - main 
 
 jobs:
   run-tests:
@@ -23,10 +23,9 @@ jobs:
       run: docker-compose -f docker-compose.test.yml up --build -d
 
     - name: Wait for services
-      run: sleep 10  # adjust if needed based on your containers
+      run: sleep 10 
 
     - name: Run tests
-      run: docker-compose -f docker-compose.test.yml exec -T <test-service> npm test  # or your test command
-
+      run: docker-compose -f docker-compose.test.yml exec -T <test-service> npm test
     - name: Tear down
       run: docker-compose -f docker-compose.test.yml down

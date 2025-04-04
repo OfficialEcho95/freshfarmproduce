@@ -1,6 +1,6 @@
 //still work in progress
 
-process.env.PORT = 3001;
+// process.env.PORT = 3001;
 
 const mongoose = require('mongoose');
 const server = require('../server');

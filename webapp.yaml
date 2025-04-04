@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freshfarm-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: freshfarm
+  template:
+    metadata:
+      labels:
+        app: freshfarm
+    spec:
+      containers:
+        - name: freshfarm
+          image: officialecho95/freshfarms:1.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: MONGO_URI
+              value: "mongodb://emmanuel:Emma55527378.@mongo:27017/freshfarm?authSource=admin"
+            - name: REDIS_HOST
+              value: "redis"
+            - name: REDIS_PORT
+              value: "6379"

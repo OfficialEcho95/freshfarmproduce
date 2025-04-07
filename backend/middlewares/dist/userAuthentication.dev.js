@@ -149,31 +149,38 @@ var authorizeFarmerOrAdmin = function authorizeFarmerOrAdmin(req, res, next) {
           }));
 
         case 8:
-          if (dbUser.role === 'admin' || dbUser._id.toString() === farmerId) {
-            next();
-          } else {
-            res.status(403).json({
-              message: 'Access denied.'
-            });
+          if (!(dbUser.role === 'admin' || dbUser._id.toString() === farmerId)) {
+            _context2.next = 12;
+            break;
           }
 
-          _context2.next = 15;
+          next();
+          _context2.next = 13;
           break;
 
-        case 11:
-          _context2.prev = 11;
+        case 12:
+          return _context2.abrupt("return", res.status(403).json({
+            message: 'Access denied.'
+          }));
+
+        case 13:
+          _context2.next = 19;
+          break;
+
+        case 15:
+          _context2.prev = 15;
           _context2.t0 = _context2["catch"](0);
           console.error('Authorization error:', _context2.t0);
           res.status(500).json({
             message: 'Server error'
           });
 
-        case 15:
+        case 19:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[0, 11]]);
+  }, null, null, [[0, 15]]);
 };
 
 module.exports = {

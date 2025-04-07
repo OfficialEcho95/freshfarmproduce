@@ -85,7 +85,7 @@ const authorizeFarmerOrAdmin = async (req, res, next) => {
     if (dbUser.role === 'admin' || dbUser._id.toString() === farmerId) {
       next();
     } else {
-      res.status(403).json({ message: 'Access denied.' });
+      return res.status(403).json({ message: 'Access denied.' });
     }
   } catch (error) {
     console.error('Authorization error:', error);

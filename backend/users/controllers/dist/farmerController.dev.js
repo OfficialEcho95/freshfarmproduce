@@ -448,9 +448,9 @@ var updateCommodity = function updateCommodity(req, res) {
           _context4.prev = 20;
           _context4.t0 = _context4["catch"](0);
           console.error(_context4.t0);
-          res.status(500).json({
+          return _context4.abrupt("return", res.status(500).json({
             message: 'Error encountered updating commodity'
-          });
+          }));
 
         case 24:
         case "end":

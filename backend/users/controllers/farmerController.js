@@ -197,7 +197,7 @@ const updateCommodity = async (req, res) => {
     return res.status(200).json({ message: 'Commodity updated successfully', commodity });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered updating commodity' });
+    return res.status(500).json({ message: 'Error encountered updating commodity' });
   }
 };
 

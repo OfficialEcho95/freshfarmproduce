@@ -171,9 +171,9 @@ var authorizeFarmerOrAdmin = function authorizeFarmerOrAdmin(req, res, next) {
           _context2.prev = 15;
           _context2.t0 = _context2["catch"](0);
           console.error('Authorization error:', _context2.t0);
-          res.status(500).json({
+          return _context2.abrupt("return", res.status(500).json({
             message: 'Server error'
-          });
+          }));
 
         case 19:
         case "end":

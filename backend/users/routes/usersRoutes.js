@@ -28,7 +28,7 @@ router.post('/login-user', loginUser);
 
 
 // protected routes
-// router.use(authenticateToken);
+router.use(authenticateToken);
 router.post('/check-session', checkSession);
 router.get('/logout-user', logoutUser);
 router.put('/update-user-data', updateUserData);

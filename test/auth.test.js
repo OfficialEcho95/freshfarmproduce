@@ -12,7 +12,6 @@ const { capitalizeEmail, capitalizeEachWord } = require('../backend/users/contro
 const { app } = require('../index');
 const User = require('../backend/users/models/user');
 const redisClient = require('../redisClient');
-const authentication = require('../backend/middlewares/userAuthentication')
 
 jest.mock('../backend/users/models/user'); // Mock the User model
 jest.mock('../backend/admin/models/admin'); // Mock the Admin model

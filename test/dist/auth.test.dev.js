@@ -36,8 +36,6 @@ var User = require('../backend/users/models/user');
 
 var redisClient = require('../redisClient');
 
-var authentication = require('../backend/middlewares/userAuthentication');
-
 _globals.jest.mock('../backend/users/models/user'); // Mock the User model
 
 

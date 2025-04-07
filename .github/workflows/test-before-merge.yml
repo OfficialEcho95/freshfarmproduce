@@ -34,13 +34,17 @@ jobs:
         NODE_ENV: ${{ secrets.NODE_ENV }}
 
     - name: Wait for services to be ready
-      run: sleep 10
+      run: sleep 30  # Increased sleep time to ensure all services are fully ready
 
     - name: List running containers
       run: docker ps -a
 
     - name: Show logs for debugging
       run: docker-compose logs
+
+    - name: Check if services are ready
+      run: |
+        docker-compose exec -T app curl --silent --fail http://localhost:3001 || exit 1
 
     - name: Run tests
       run: docker-compose exec -T app npm test --detectOpenHandles test/auth.test.js

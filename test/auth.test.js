@@ -1,6 +1,6 @@
-// jest.mock('../backend/middlewares/userAuthentication', () => ({
-//   authenticateToken: (req, res, next) => next() // mock that always passes
-// }));
+jest.mock('../backend/middlewares/userAuthentication', () => ({
+  authenticateToken: (req, res, next) => next() // mock that always passes
+}));
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest, test } from '@jest/globals';
 

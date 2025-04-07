@@ -10,7 +10,10 @@
 /* eslint-disable linebreak-style */
 var app = require('./server');
 
-var PORT = process.env.PORT || 3001;
-app.listen(PORT, function () {
-  console.log('Server listening on port:', PORT);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(process.env.PORT || 3001, function () {
+    console.log('Server is running on port 3001');
+  });
+}
+
+module.exports = app;

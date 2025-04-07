@@ -167,39 +167,39 @@ const deleteCommodityByName = async (req, res) => {
 };
 
 // route to update commodity
-const updateCommodity = async (req, res) => {
-  try {
-    const { id, comId } = req.params; // farmer id
-    const data = req.body; // comId is commodity Id
+// const updateCommodity = async (req, res) => {
+//   try {
+//     const { id, comId } = req.params; // farmer id
+//     const data = req.body; // comId is commodity Id
 
-    const commodityId = await Commodity.findOne({ _id: comId });
+//     const commodityId = await Commodity.findOne({ _id: comId });
 
-    if (!commodityId) {
-      return res.status(402).json({ message: 'Not a valid product id' });
-    }
+//     if (!commodityId) {
+//       return res.status(402).json({ message: 'Not a valid product id' });
+//     }
 
-    let imageUrls = [];
-    if (req.files) {
-      imageUrls = req.files.map((file) => `commodityUploads/${file.filename}`);
-    }
+//     let imageUrls = [];
+//     if (req.files) {
+//       imageUrls = req.files.map((file) => `commodityUploads/${file.filename}`);
+//     }
 
-    const updateData = { ...data };
-    if (imageUrls.length > 0) {
-      updateData.images = imageUrls;
-    }
+//     const updateData = { ...data };
+//     if (imageUrls.length > 0) {
+//       updateData.images = imageUrls;
+//     }
 
-    const commodity = await Commodity.findByIdAndUpdate(comId, updateData, { new: true });
+//     const commodity = await Commodity.findByIdAndUpdate(comId, updateData, { new: true });
 
-    if (!commodity) {
-      return res.status(404).json({ message: 'Error updating commodity' });
-    }
+//     if (!commodity) {
+//       return res.status(404).json({ message: 'Error updating commodity' });
+//     }
 
-    return res.status(200).json({ message: 'Commodity updated successfully', commodity });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Error encountered updating commodity' });
-  }
-};
+//     return res.status(200).json({ message: 'Commodity updated successfully', commodity });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: 'Error encountered updating commodity' });
+//   }
+// };
 
 // route to find farmer
 const getCommoditiesByFarmer = async (req, res) => {

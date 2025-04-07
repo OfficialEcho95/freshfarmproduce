@@ -8,12 +8,6 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 /* eslint-disable jest/require-hook */
 var _require = require('csv-writer'),
     createObjectCsvWriter = _require.createObjectCsvWriter;
@@ -375,133 +369,76 @@ var deleteCommodityByName = function deleteCommodityByName(req, res) {
     }
   }, null, null, [[0, 10]]);
 }; // route to update commodity
-
-
-var updateCommodity = function updateCommodity(req, res) {
-  var _req$params, id, comId, data, commodityId, imageUrls, updateData, commodity;
-
-  return regeneratorRuntime.async(function updateCommodity$(_context4) {
-    while (1) {
-      switch (_context4.prev = _context4.next) {
-        case 0:
-          _context4.prev = 0;
-          _req$params = req.params, id = _req$params.id, comId = _req$params.comId; // farmer id
-
-          data = req.body; // comId is commodity Id
-
-          _context4.next = 5;
-          return regeneratorRuntime.awrap(Commodity.findOne({
-            _id: comId
-          }));
-
-        case 5:
-          commodityId = _context4.sent;
-
-          if (commodityId) {
-            _context4.next = 8;
-            break;
-          }
-
-          return _context4.abrupt("return", res.status(402).json({
-            message: 'Not a valid product id'
-          }));
-
-        case 8:
-          imageUrls = [];
-
-          if (req.files) {
-            imageUrls = req.files.map(function (file) {
-              return "commodityUploads/".concat(file.filename);
-            });
-          }
-
-          updateData = _objectSpread({}, data);
-
-          if (imageUrls.length > 0) {
-            updateData.images = imageUrls;
-          }
-
-          _context4.next = 14;
-          return regeneratorRuntime.awrap(Commodity.findByIdAndUpdate(comId, updateData, {
-            "new": true
-          }));
-
-        case 14:
-          commodity = _context4.sent;
-
-          if (commodity) {
-            _context4.next = 17;
-            break;
-          }
-
-          return _context4.abrupt("return", res.status(404).json({
-            message: 'Error updating commodity'
-          }));
-
-        case 17:
-          return _context4.abrupt("return", res.status(200).json({
-            message: 'Commodity updated successfully',
-            commodity: commodity
-          }));
-
-        case 20:
-          _context4.prev = 20;
-          _context4.t0 = _context4["catch"](0);
-          console.error(_context4.t0);
-          return _context4.abrupt("return", res.status(500).json({
-            message: 'Error encountered updating commodity'
-          }));
-
-        case 24:
-        case "end":
-          return _context4.stop();
-      }
-    }
-  }, null, null, [[0, 20]]);
-}; // route to find farmer
+// const updateCommodity = async (req, res) => {
+//   try {
+//     const { id, comId } = req.params; // farmer id
+//     const data = req.body; // comId is commodity Id
+//     const commodityId = await Commodity.findOne({ _id: comId });
+//     if (!commodityId) {
+//       return res.status(402).json({ message: 'Not a valid product id' });
+//     }
+//     let imageUrls = [];
+//     if (req.files) {
+//       imageUrls = req.files.map((file) => `commodityUploads/${file.filename}`);
+//     }
+//     const updateData = { ...data };
+//     if (imageUrls.length > 0) {
+//       updateData.images = imageUrls;
+//     }
+//     const commodity = await Commodity.findByIdAndUpdate(comId, updateData, { new: true });
+//     if (!commodity) {
+//       return res.status(404).json({ message: 'Error updating commodity' });
+//     }
+//     return res.status(200).json({ message: 'Commodity updated successfully', commodity });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: 'Error encountered updating commodity' });
+//   }
+// };
+// route to find farmer
 
 
 var getCommoditiesByFarmer = function getCommoditiesByFarmer(req, res) {
   var farmerId, commodities;
-  return regeneratorRuntime.async(function getCommoditiesByFarmer$(_context5) {
+  return regeneratorRuntime.async(function getCommoditiesByFarmer$(_context4) {
     while (1) {
-      switch (_context5.prev = _context5.next) {
+      switch (_context4.prev = _context4.next) {
         case 0:
-          _context5.prev = 0;
+          _context4.prev = 0;
           farmerId = req.params.farmerId;
-          _context5.next = 4;
+          _context4.next = 4;
           return regeneratorRuntime.awrap(Commodity.find({
             farmer: farmerId
           }));
 
         case 4:
-          commodities = _context5.sent;
+          commodities = _context4.sent;
 
           if (commodities.length) {
-            _context5.next = 7;
+            _context4.next = 7;
             break;
           }
 
-          return _context5.abrupt("return", res.status(404).json({
+          return _context4.abrupt("return", res.status(404).json({
             message: 'No commodities found for this farmer'
           }));
 
         case 7:
-          return _context5.abrupt("return", res.status(200).json({
+          return _context4.abrupt("return", res.status(200).json({
             commodities: commodities
           }));
 
         case 10:
-          _context5.prev = 10;
-          _context5.t0 = _context5["catch"](0);
-          console.error(_context5.t0);
-          return _context5.abrupt("return", res.status(500).json({
+          _context4.prev = 10;
+          _context4.t0 = _context4["catch"](0);
+          console.error(_context4.t0);
+          return _context4.abrupt("return", res.status(500).json({
             message: 'Error encountered retrieving commodities'
           }));
 
         case 14:
         case "end":
-          return _context5.stop();
+          return _context4.stop();
       }
     }
   }, null, null, [[0, 10]]);
@@ -510,33 +447,33 @@ var getCommoditiesByFarmer = function getCommoditiesByFarmer(req, res) {
 
 var getAllCommodities = function getAllCommodities(req, res) {
   var commodities;
-  return regeneratorRuntime.async(function getAllCommodities$(_context6) {
+  return regeneratorRuntime.async(function getAllCommodities$(_context5) {
     while (1) {
-      switch (_context6.prev = _context6.next) {
+      switch (_context5.prev = _context5.next) {
         case 0:
-          _context6.prev = 0;
-          _context6.next = 3;
+          _context5.prev = 0;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(Commodity.find());
 
         case 3:
-          commodities = _context6.sent;
+          commodities = _context5.sent;
           res.status(200).json({
             commodities: commodities
           });
-          _context6.next = 11;
+          _context5.next = 11;
           break;
 
         case 7:
-          _context6.prev = 7;
-          _context6.t0 = _context6["catch"](0);
-          console.error(_context6.t0);
+          _context5.prev = 7;
+          _context5.t0 = _context5["catch"](0);
+          console.error(_context5.t0);
           res.status(500).json({
             message: 'Error encountered retrieving commodities'
           });
 
         case 11:
         case "end":
-          return _context6.stop();
+          return _context5.stop();
       }
     }
   }, null, null, [[0, 7]]);
@@ -545,24 +482,24 @@ var getAllCommodities = function getAllCommodities(req, res) {
 
 var getCommodityById = function getCommodityById(req, res) {
   var id, commodity;
-  return regeneratorRuntime.async(function getCommodityById$(_context7) {
+  return regeneratorRuntime.async(function getCommodityById$(_context6) {
     while (1) {
-      switch (_context7.prev = _context7.next) {
+      switch (_context6.prev = _context6.next) {
         case 0:
-          _context7.prev = 0;
+          _context6.prev = 0;
           id = req.params.id;
-          _context7.next = 4;
+          _context6.next = 4;
           return regeneratorRuntime.awrap(Commodity.findById(id));
 
         case 4:
-          commodity = _context7.sent;
+          commodity = _context6.sent;
 
           if (commodity) {
-            _context7.next = 7;
+            _context6.next = 7;
             break;
           }
 
-          return _context7.abrupt("return", res.status(404).json({
+          return _context6.abrupt("return", res.status(404).json({
             message: 'Commodity not found'
           }));
 
@@ -570,20 +507,20 @@ var getCommodityById = function getCommodityById(req, res) {
           res.status(200).json({
             commodity: commodity
           });
-          _context7.next = 14;
+          _context6.next = 14;
           break;
 
         case 10:
-          _context7.prev = 10;
-          _context7.t0 = _context7["catch"](0);
-          console.error(_context7.t0);
+          _context6.prev = 10;
+          _context6.t0 = _context6["catch"](0);
+          console.error(_context6.t0);
           res.status(500).json({
             message: 'Error encountered retrieving commodity'
           });
 
         case 14:
         case "end":
-          return _context7.stop();
+          return _context6.stop();
       }
     }
   }, null, null, [[0, 10]]);
@@ -592,24 +529,24 @@ var getCommodityById = function getCommodityById(req, res) {
 
 var searchCommodities = function searchCommodities(req, res) {
   var query, commodities;
-  return regeneratorRuntime.async(function searchCommodities$(_context8) {
+  return regeneratorRuntime.async(function searchCommodities$(_context7) {
     while (1) {
-      switch (_context8.prev = _context8.next) {
+      switch (_context7.prev = _context7.next) {
         case 0:
-          _context8.prev = 0;
+          _context7.prev = 0;
           query = req.query.q;
 
           if (query) {
-            _context8.next = 4;
+            _context7.next = 4;
             break;
           }
 
-          return _context8.abrupt("return", res.status(400).json({
+          return _context7.abrupt("return", res.status(400).json({
             message: 'Search query is required'
           }));
 
         case 4:
-          _context8.next = 6;
+          _context7.next = 6;
           return regeneratorRuntime.awrap(Commodity.find({
             $or: [{
               title: {
@@ -635,24 +572,24 @@ var searchCommodities = function searchCommodities(req, res) {
           }));
 
         case 6:
-          commodities = _context8.sent;
+          commodities = _context7.sent;
           res.status(200).json({
             commodities: commodities
           });
-          _context8.next = 14;
+          _context7.next = 14;
           break;
 
         case 10:
-          _context8.prev = 10;
-          _context8.t0 = _context8["catch"](0);
-          console.error('Error during commodity search:', _context8.t0);
+          _context7.prev = 10;
+          _context7.t0 = _context7["catch"](0);
+          console.error('Error during commodity search:', _context7.t0);
           res.status(500).json({
             message: 'Server error'
           });
 
         case 14:
         case "end":
-          return _context8.stop();
+          return _context7.stop();
       }
     }
   }, null, null, [[0, 10]]);
@@ -661,12 +598,12 @@ var searchCommodities = function searchCommodities(req, res) {
 
 var mostCompletedSales = function mostCompletedSales(req, res) {
   var topFarmers;
-  return regeneratorRuntime.async(function mostCompletedSales$(_context9) {
+  return regeneratorRuntime.async(function mostCompletedSales$(_context8) {
     while (1) {
-      switch (_context9.prev = _context9.next) {
+      switch (_context8.prev = _context8.next) {
         case 0:
-          _context9.prev = 0;
-          _context9.next = 3;
+          _context8.prev = 0;
+          _context8.next = 3;
           return regeneratorRuntime.awrap(User.aggregate([{
             $match: {
               role: 'farmer',
@@ -699,22 +636,22 @@ var mostCompletedSales = function mostCompletedSales(req, res) {
           }]));
 
         case 3:
-          topFarmers = _context9.sent;
+          topFarmers = _context8.sent;
           res.json(topFarmers);
-          _context9.next = 11;
+          _context8.next = 11;
           break;
 
         case 7:
-          _context9.prev = 7;
-          _context9.t0 = _context9["catch"](0);
-          console.error('Error fetching top farmers:', _context9.t0);
+          _context8.prev = 7;
+          _context8.t0 = _context8["catch"](0);
+          console.error('Error fetching top farmers:', _context8.t0);
           res.status(500).json({
             message: 'Internal server error'
           });
 
         case 11:
         case "end":
-          return _context9.stop();
+          return _context8.stop();
       }
     }
   }, null, null, [[0, 7]]);
@@ -724,38 +661,38 @@ var mostCompletedSales = function mostCompletedSales(req, res) {
 var mostSoldProduct = function mostSoldProduct(req, res) {
   var farmerId, allOrders, productSales, mostSoldProducts, maxSales, _i, _Object$entries, _Object$entries$_i, productId, sales, mostSoldProductDetails;
 
-  return regeneratorRuntime.async(function mostSoldProduct$(_context10) {
+  return regeneratorRuntime.async(function mostSoldProduct$(_context9) {
     while (1) {
-      switch (_context10.prev = _context10.next) {
+      switch (_context9.prev = _context9.next) {
         case 0:
-          _context10.prev = 0;
+          _context9.prev = 0;
           farmerId = req.params.farmerId;
 
           if (farmerId) {
-            _context10.next = 4;
+            _context9.next = 4;
             break;
           }
 
-          return _context10.abrupt("return", res.status(404).json({
+          return _context9.abrupt("return", res.status(404).json({
             message: 'Farmer not found'
           }));
 
         case 4:
-          _context10.next = 6;
+          _context9.next = 6;
           return regeneratorRuntime.awrap(Order.find({
             'items.farmer': farmerId,
             paymentStatus: 'paid'
           }));
 
         case 6:
-          allOrders = _context10.sent;
+          allOrders = _context9.sent;
 
           if (allOrders.length) {
-            _context10.next = 9;
+            _context9.next = 9;
             break;
           }
 
-          return _context10.abrupt("return", res.status(404).json({
+          return _context9.abrupt("return", res.status(404).json({
             message: 'No completed sales found'
           }));
 
@@ -789,16 +726,16 @@ var mostSoldProduct = function mostSoldProduct(req, res) {
           }
 
           if (!(mostSoldProducts.length === 0)) {
-            _context10.next = 16;
+            _context9.next = 16;
             break;
           }
 
-          return _context10.abrupt("return", res.status(404).json({
+          return _context9.abrupt("return", res.status(404).json({
             message: 'No sales data available'
           }));
 
         case 16:
-          _context10.next = 18;
+          _context9.next = 18;
           return regeneratorRuntime.awrap(Commodity.find({
             _id: {
               $in: mostSoldProducts
@@ -806,25 +743,25 @@ var mostSoldProduct = function mostSoldProduct(req, res) {
           }));
 
         case 18:
-          mostSoldProductDetails = _context10.sent;
+          mostSoldProductDetails = _context9.sent;
           res.status(200).json({
             mostSoldProducts: mostSoldProductDetails,
             maxSales: maxSales
           });
-          _context10.next = 26;
+          _context9.next = 26;
           break;
 
         case 22:
-          _context10.prev = 22;
-          _context10.t0 = _context10["catch"](0);
-          console.error(_context10.t0);
+          _context9.prev = 22;
+          _context9.t0 = _context9["catch"](0);
+          console.error(_context9.t0);
           res.status(500).json({
             message: 'Error fetching most sold products'
           });
 
         case 26:
         case "end":
-          return _context10.stop();
+          return _context9.stop();
       }
     }
   }, null, null, [[0, 22]]);
@@ -833,50 +770,50 @@ var mostSoldProduct = function mostSoldProduct(req, res) {
 
 var getCompleteOrdersByFarmer = function getCompleteOrdersByFarmer(req, res) {
   var farmerId, farmer, orders;
-  return regeneratorRuntime.async(function getCompleteOrdersByFarmer$(_context11) {
+  return regeneratorRuntime.async(function getCompleteOrdersByFarmer$(_context10) {
     while (1) {
-      switch (_context11.prev = _context11.next) {
+      switch (_context10.prev = _context10.next) {
         case 0:
-          _context11.prev = 0;
+          _context10.prev = 0;
           farmerId = req.params.farmerId;
-          _context11.next = 4;
+          _context10.next = 4;
           return regeneratorRuntime.awrap(User.findById(farmerId));
 
         case 4:
-          farmer = _context11.sent;
+          farmer = _context10.sent;
 
           if (farmer) {
-            _context11.next = 7;
+            _context10.next = 7;
             break;
           }
 
-          return _context11.abrupt("return", res.status(404).json({
+          return _context10.abrupt("return", res.status(404).json({
             message: 'Farmer not found'
           }));
 
         case 7:
-          _context11.next = 9;
+          _context10.next = 9;
           return regeneratorRuntime.awrap(Order.find({
             paymentStatus: 'paid'
           }).populate('items.commodity').populate('customer'));
 
         case 9:
-          orders = _context11.sent;
+          orders = _context10.sent;
           res.status(200).json(orders);
-          _context11.next = 17;
+          _context10.next = 17;
           break;
 
         case 13:
-          _context11.prev = 13;
-          _context11.t0 = _context11["catch"](0);
-          console.error(_context11.t0);
+          _context10.prev = 13;
+          _context10.t0 = _context10["catch"](0);
+          console.error(_context10.t0);
           res.status(500).json({
             message: 'Server error'
           });
 
         case 17:
         case "end":
-          return _context11.stop();
+          return _context10.stop();
       }
     }
   }, null, null, [[0, 13]]);
@@ -886,21 +823,21 @@ var getCompleteOrdersByFarmer = function getCompleteOrdersByFarmer(req, res) {
 var salesReport = function salesReport(req, res) {
   var format, _req$query, page, limit, skip, orders, data, csvWriter, itemSales, chartData, itemCount, pageCount;
 
-  return regeneratorRuntime.async(function salesReport$(_context12) {
+  return regeneratorRuntime.async(function salesReport$(_context11) {
     while (1) {
-      switch (_context12.prev = _context12.next) {
+      switch (_context11.prev = _context11.next) {
         case 0:
-          _context12.prev = 0;
+          _context11.prev = 0;
           format = req.query.format;
           _req$query = req.query, page = _req$query.page, limit = _req$query.limit;
           skip = (page - 1) * limit;
-          _context12.next = 6;
+          _context11.next = 6;
           return regeneratorRuntime.awrap(Order.find({
             paymentStatus: 'paid'
           }).populate('items.commodity').populate('items.farmer').skip(skip).limit(limit));
 
         case 6:
-          orders = _context12.sent;
+          orders = _context11.sent;
           data = orders.map(function (order) {
             return order.items.map(function (item) {
               return {
@@ -915,7 +852,7 @@ var salesReport = function salesReport(req, res) {
           }).flat();
 
           if (!(format === 'csv')) {
-            _context12.next = 15;
+            _context11.next = 15;
             break;
           }
 
@@ -942,17 +879,17 @@ var salesReport = function salesReport(req, res) {
               title: 'Order Date'
             }]
           });
-          _context12.next = 12;
+          _context11.next = 12;
           return regeneratorRuntime.awrap(csvWriter.writeRecords(data));
 
         case 12:
           res.download('sales_report.csv');
-          _context12.next = 26;
+          _context11.next = 26;
           break;
 
         case 15:
           if (!(format === 'chart')) {
-            _context12.next = 21;
+            _context11.next = 21;
             break;
           }
 
@@ -977,17 +914,17 @@ var salesReport = function salesReport(req, res) {
           res.json({
             chartData: chartData
           });
-          _context12.next = 26;
+          _context11.next = 26;
           break;
 
         case 21:
-          _context12.next = 23;
+          _context11.next = 23;
           return regeneratorRuntime.awrap(Order.countDocuments({
             paymentStatus: 'paid'
           }));
 
         case 23:
-          itemCount = _context12.sent;
+          itemCount = _context11.sent;
           pageCount = Math.ceil(itemCount / limit);
           res.json({
             has_more: paginate.hasNextPages(req)(pageCount),
@@ -997,20 +934,20 @@ var salesReport = function salesReport(req, res) {
           });
 
         case 26:
-          _context12.next = 32;
+          _context11.next = 32;
           break;
 
         case 28:
-          _context12.prev = 28;
-          _context12.t0 = _context12["catch"](0);
-          console.error('Error generating sales report:', _context12.t0);
+          _context11.prev = 28;
+          _context11.t0 = _context11["catch"](0);
+          console.error('Error generating sales report:', _context11.t0);
           res.status(500).json({
             message: 'Error generating sales report'
           });
 
         case 32:
         case "end":
-          return _context12.stop();
+          return _context11.stop();
       }
     }
   }, null, null, [[0, 28]]);
@@ -1021,24 +958,24 @@ var salesReport = function salesReport(req, res) {
 
 var productsTracker = function productsTracker(req, res) {
   var lowCommodities, commodities, publishPromises;
-  return regeneratorRuntime.async(function productsTracker$(_context13) {
+  return regeneratorRuntime.async(function productsTracker$(_context12) {
     while (1) {
-      switch (_context13.prev = _context13.next) {
+      switch (_context12.prev = _context12.next) {
         case 0:
-          _context13.prev = 0;
+          _context12.prev = 0;
           lowCommodities = [];
-          _context13.next = 4;
+          _context12.next = 4;
           return regeneratorRuntime.awrap(Commodity.find().populate('farmer'));
 
         case 4:
-          commodities = _context13.sent;
+          commodities = _context12.sent;
 
           if (!(!commodities || commodities.length === 0)) {
-            _context13.next = 7;
+            _context12.next = 7;
             break;
           }
 
-          return _context13.abrupt("return", res.status(404).json({
+          return _context12.abrupt("return", res.status(404).json({
             message: 'No resources found'
           }));
 
@@ -1061,26 +998,26 @@ var productsTracker = function productsTracker(req, res) {
               text: "The product \"".concat(comm.title, "\" is running low with only ").concat(comm.quantityAvailable, " items left.")
             }));
           });
-          _context13.next = 11;
+          _context12.next = 11;
           return regeneratorRuntime.awrap(Promise.all(publishPromises));
 
         case 11:
-          return _context13.abrupt("return", res.status(200).json({
+          return _context12.abrupt("return", res.status(200).json({
             message: 'Checked all products and published notifications for low commodities.',
             lowCommodities: lowCommodities
           }));
 
         case 14:
-          _context13.prev = 14;
-          _context13.t0 = _context13["catch"](0);
-          console.error('Error tracking products:', _context13.t0);
+          _context12.prev = 14;
+          _context12.t0 = _context12["catch"](0);
+          console.error('Error tracking products:', _context12.t0);
           res.status(500).json({
             message: 'An error occurred while tracking products.'
           });
 
         case 18:
         case "end":
-          return _context13.stop();
+          return _context12.stop();
       }
     }
   }, null, null, [[0, 14]]);

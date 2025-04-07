@@ -37,7 +37,7 @@ router.get('/most-sold-product-by-vendor/:farmerId', mostSoldProduct);
 router.post('/add-commodity', uploadImages, addCommodity);
 router.post('/buy-commodity', buyCommodity);
 router.delete('/delete-commodity/:name', deleteCommodityByName);
-router.put('/update-commodity/:id/:comId', authorizeFarmerOrAdmin, updateCommodity);
+// router.put('/update-commodity/:id/:comId', authorizeFarmerOrAdmin, updateCommodity);
 router.get('/search', searchCommodities);
 router.get('/most-purchased-product-by-buyer/:userId', mostPurchasedProduct);
 router.get('/top-purchased-products/:userId', topPurchasedProducts);

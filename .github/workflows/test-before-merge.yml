@@ -41,8 +41,8 @@ jobs:
     - name: List running containers
       run: docker ps -a
 
-    - name: Show logs for debugging (freshfarm_app container)
-      run: docker-compose logs freshfarm_app
+    # - name: Show logs for debugging (freshfarm_app container)
+    #   run: docker-compose logs freshfarm_app
 
     - name: Check if freshfarm_app is healthy
       run: |

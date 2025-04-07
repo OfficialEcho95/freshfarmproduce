@@ -1,3 +1,4 @@
+/* eslint-disable jest/require-hook */
 const { createObjectCsvWriter } = require('csv-writer');
 const paginate = require('express-paginate');
 const express = require('express');
@@ -522,7 +523,6 @@ module.exports = {
   getCommoditiesByFarmer,
   getCommodityById,
   getAllCommodities,
-  updateCommodity,
   updateCommodity,
   deleteCommodityByName,
   searchCommodities,

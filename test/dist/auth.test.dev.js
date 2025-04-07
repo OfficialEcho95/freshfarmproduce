@@ -27,7 +27,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 /* eslint-disable import/no-extraneous-dependencies */
 
 /* eslint-disable jest/no-untyped-mock-factory */
-// Ensure this path is correct
 // Mock the necessary modules
 _globals.jest.mock('../backend/middlewares/userAuthentication', function () {
   return {

@@ -4,17 +4,19 @@
 /* eslint-disable jest/require-top-level-describe */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable jest/no-untyped-mock-factory */
-import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import {
+  afterAll, beforeAll, beforeEach, describe, expect, it, jest,
+} from '@jest/globals';
 import request from 'supertest';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { app } from '../index'; // Ensure this path is correct
+import { app } from '../index';
 import User from '../backend/users/models/user';
 import redisClient from '../redisClient';
 
 // Mock the necessary modules
 jest.mock('../backend/middlewares/userAuthentication', () => ({
-  authenticateToken: (req, res, next) => next() // Mock token middleware
+  authenticateToken: (req, res, next) => next(), // Mock token middleware
 }));
 
 jest.mock('../backend/users/models/user'); // Mock the User model

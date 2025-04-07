@@ -1,6 +1,5 @@
 /* eslint-disable jest/require-hook */
 const express = require('express');
-const path = require('path');
 const uploadImages = require('../../../multerUploads');
 
 const router = express.Router();

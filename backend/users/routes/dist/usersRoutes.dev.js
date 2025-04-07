@@ -3,8 +3,6 @@
 /* eslint-disable jest/require-hook */
 var express = require('express');
 
-var path = require('path');
-
 var uploadImages = require('../../../multerUploads');
 
 var router = express.Router();

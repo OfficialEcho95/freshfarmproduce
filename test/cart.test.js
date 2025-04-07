@@ -3,7 +3,7 @@
 // process.env.PORT = 3001;
 
 const mongoose = require('mongoose');
-const server = require('../server');
+const server = require('../index');
 const User = require('../backend/users/models/user');
 const Commodity = require('../backend/users/models/commodity');
 const Cart = require('../backend/users/models/cart');

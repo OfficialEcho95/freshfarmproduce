@@ -29,7 +29,7 @@ var _require = require('../backend/users/controllers/userController'),
     capitalizeEmail = _require.capitalizeEmail,
     capitalizeEachWord = _require.capitalizeEachWord;
 
-var _require2 = require('../server'),
+var _require2 = require('../index'),
     app = _require2.app;
 
 var User = require('../backend/users/models/user');

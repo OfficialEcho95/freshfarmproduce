@@ -1,10 +1,10 @@
 "use strict";
 
+/* eslint-disable jest/require-hook */
+// server.js
 require('dotenv').config();
 
 var express = require('express');
-
-var app = express();
 
 var path = require('path');
 
@@ -16,7 +16,7 @@ var MongoStore = require('connect-mongo');
 
 var dbConnect = require('./backend/db/db');
 
-var PORT = process.env.PORT || 3000;
+var app = express();
 
 var userRoutes = require('./backend/users/routes/usersRoutes');
 
@@ -35,20 +35,11 @@ app.use(session({
   store: MongoStore.create({
     mongoUrl: process.env.DB_AUTHENTICATION
   })
-})); // Serve favicon
-
-app.use(cors()); // Serve static files from the 'frontend' directory
-
+}));
+app.use(cors());
 app.use(express["static"](path.join(__dirname, 'frontend')));
-app.use(express["static"](path.join(__dirname, 'frontend/js/html'))); // Serve static files from the commodityUploads directory
-
-app.use('/commodityUploads', express["static"](path.join(__dirname, '/commodityUploads'))); // app.use('/api/v1/users', userRoutes);
-
+app.use(express["static"](path.join(__dirname, 'frontend/js/html')));
+app.use('/commodityUploads', express["static"](path.join(__dirname, '/commodityUploads')));
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/users', userRoutes);
-app.listen(PORT, function () {
-  console.log('Server listening on port:', PORT);
-});
-module.exports = {
-  app: app
-};
+module.exports = app;

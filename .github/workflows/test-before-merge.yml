@@ -34,20 +34,28 @@ jobs:
         NODE_ENV: ${{ secrets.NODE_ENV }}
 
     - name: Wait for services to be ready
-      run: sleep 30  # Increased sleep time to ensure all services are fully ready
+      run: |
+        echo "Waiting for containers to be ready..."
+        sleep 30  # Wait for the services to fully start
 
     - name: List running containers
       run: docker ps -a
 
-    - name: Show logs for debugging
-      run: docker-compose logs
+    - name: Show logs for debugging (freshfarm_app container)
+      run: docker-compose logs freshfarm_app
 
-    - name: Check if services are ready
+    - name: Check if freshfarm_app is healthy
       run: |
-        docker-compose exec -T app curl --silent --fail http://localhost:3001 || exit 1
+        container_health=$(docker inspect --format '{{.State.Health.Status}}' freshfarm_app)
+        if [[ "$container_health" != "healthy" ]]; then
+          echo "Container freshfarm_app is not healthy. Exiting."
+          exit 1
+        fi
 
     - name: Run tests
-      run: docker-compose exec -T app npm test --detectOpenHandles test/auth.test.js
+      run: |
+        echo "Running tests..."
+        docker-compose exec -T app npm test --detectOpenHandles test/auth.test.js
 
     - name: Tear down
       if: always()

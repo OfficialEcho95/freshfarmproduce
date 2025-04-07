@@ -26,8 +26,6 @@ const {
 router.post('/register-user', registerUser);
 router.post('/login-user', loginUser);
 
-console.log('authenticateToken:', authenticateToken);
-
 
 // protected routes
 router.use(authenticateToken);

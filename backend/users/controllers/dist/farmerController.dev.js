@@ -1036,7 +1036,7 @@ module.exports = {
   getCommoditiesByFarmer: getCommoditiesByFarmer,
   getCommodityById: getCommodityById,
   getAllCommodities: getAllCommodities,
-  updateCommodity: updateCommodity,
+  // updateCommodity,
   deleteCommodityByName: deleteCommodityByName,
   searchCommodities: searchCommodities,
   getCompleteOrdersByFarmer: getCompleteOrdersByFarmer,

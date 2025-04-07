@@ -55,6 +55,10 @@ _globals.jest.mock('../redisClient'); // Mock Redis client
 // });
 
 
+(0, _globals.beforeEach)(function () {
+  _globals.jest.clearAllMocks(); // Clear mock calls before each test
+
+});
 (0, _globals.beforeEach)(function _callee() {
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {

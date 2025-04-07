@@ -43,7 +43,7 @@ jobs:
       run: docker-compose logs
 
     - name: Run tests
-      run: docker-compose exec -T app npm test test/auth.test.js
+      run: docker-compose exec -T app npm test --detectOpenHandles test/auth.test.js
 
     - name: Tear down
       if: always()

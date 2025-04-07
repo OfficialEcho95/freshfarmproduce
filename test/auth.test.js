@@ -29,6 +29,10 @@ jest.mock('../redisClient'); // Mock Redis client
 //   });
 // });
 
+beforeEach(() => {
+  jest.clearAllMocks(); // Clear mock calls before each test
+});
+
 beforeEach(async () => {
   await User.deleteMany({}); // Clear test users before each test
 });

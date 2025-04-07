@@ -44,7 +44,7 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       NODE_ENV: production
       MONGO_URI: mongodb://emmanuel:Emma55527378.@freshfarm_mongo:27017/admin

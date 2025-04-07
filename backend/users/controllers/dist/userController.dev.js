@@ -254,20 +254,18 @@ var updateUserData = function updateUserData(req, res) {
           }));
 
         case 18:
-          res.status(200).json({
+          return _context3.abrupt("return", res.status(200).json({
             message: 'User data updated successfully',
             updatedUser: updatedUser
-          });
-          _context3.next = 24;
-          break;
+          }));
 
         case 21:
           _context3.prev = 21;
           _context3.t0 = _context3["catch"](0);
-          res.status(500).json({
+          return _context3.abrupt("return", res.status(500).json({
             message: 'Internal server error',
             error: _context3.t0.message
-          });
+          }));
 
         case 24:
         case "end":

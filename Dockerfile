@@ -10,4 +10,5 @@ COPY . .
 
 EXPOSE 3001
 
-CMD ["npx", "babel-node", "--presets", "@babel/preset-env", "./index.js"]
+# CMD ["npx", "babel-node", "--presets", "@babel/preset-env", "./index.js"]
+CMD ["npm", "run", "start"]

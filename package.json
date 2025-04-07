@@ -6,8 +6,7 @@
     "scripts": {
         "lint": "./node_modules/.bin/eslint",
         "check-lint": "lint [0-9]*.js",
-        "start": "nodemon --exec babel-node --presets @babel/preset-env ./index.js",
-        "dev": "nodemon --exec babel-node --presets @babel/preset-env",
+        "start": "node index.js",
         "test": "jest "
     },
     "author": "Chukwu Emmanuel",

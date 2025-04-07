@@ -39,10 +39,6 @@ jobs:
     - name: List running containers
       run: docker ps -a
 
-    - name: Kill any process running on port 3000 (if any)
-      run: |
-        sudo fuser -k 3000/tcp || true  # This will kill the process using port 3000 (if any)
-
     - name: Show logs for debugging
       run: docker-compose logs
 

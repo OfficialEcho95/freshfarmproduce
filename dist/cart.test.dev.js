@@ -10,7 +10,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // process.env.PORT = 3001;
 var mongoose = require('mongoose');
 
-var server = require('./server');
+var server = require('./index');
 
 var User = require('./backend/users/models/user');
 

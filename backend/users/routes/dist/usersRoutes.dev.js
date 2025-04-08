@@ -72,7 +72,9 @@ router.get('/most-purchased-product-by-buyer/:userId', mostPurchasedProduct);
 router.get('/top-purchased-products/:userId', topPurchasedProducts);
 router.get('/commodity-by-id/:id', getCommodityById);
 router.get('/user-purchases/:id', userPurchases);
-router.get('/get-farmer-complete-orders/:farmerId', authorizeFarmerOrAdmin, getCompleteOrdersByFarmer);
+router.get('/get-farmer-complete-orders/:farmerId', getCompleteOrdersByFarmer); // router.get('/get-farmer-complete-orders/:farmerId',
+// authorizeFarmerOrAdmin, getCompleteOrdersByFarmer);
+
 router.get('/posts', getPosts);
 router.get('/sales-report', salesReport);
 router.post('/add-to-cart', addItemToCart);

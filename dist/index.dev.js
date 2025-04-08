@@ -12,9 +12,12 @@ var app = require('./server');
 
 if (process.env.NODE_ENV !== 'test') {
   console.log('Starting the server...');
-  app.listen(process.env.PORT || 3001, function () {
-    console.log('Server is running on port 3001');
+  app.listen(0, function () {
+    // Dynamically assigns an available port
+    console.log('Server started on random available port');
   });
+} else {
+  console.log('Running in test mode - server not started');
 }
 
 module.exports = app;

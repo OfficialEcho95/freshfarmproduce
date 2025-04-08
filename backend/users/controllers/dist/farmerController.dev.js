@@ -123,21 +123,19 @@ var addCommodity = function addCommodity(req, res) {
           return regeneratorRuntime.awrap(newPost.save());
 
         case 23:
-          res.status(201).json({
+          return _context.abrupt("return", res.status(201).json({
             message: 'Commodity added and posted successfully',
             commodity: newCommodity,
             post: newPost
-          });
-          _context.next = 30;
-          break;
+          }));
 
         case 26:
           _context.prev = 26;
           _context.t0 = _context["catch"](0);
           console.error(_context.t0);
-          res.status(500).json({
+          return _context.abrupt("return", res.status(500).json({
             message: 'Error encountered adding commodity'
-          });
+          }));
 
         case 30:
         case "end":
@@ -296,9 +294,9 @@ var buyCommodity = function buyCommodity(req, res) {
           _context2.prev = 54;
           _context2.t1 = _context2["catch"](47);
           console.log(_context2.t1);
-          res.status(400).json({
+          return _context2.abrupt("return", res.status(400).json({
             message: _context2.t1.message
-          });
+          }));
 
         case 58:
           _context2.next = 64;
@@ -308,9 +306,9 @@ var buyCommodity = function buyCommodity(req, res) {
           _context2.prev = 60;
           _context2.t2 = _context2["catch"](0);
           console.error(_context2.t2);
-          res.status(500).json({
+          return _context2.abrupt("return", res.status(500).json({
             message: 'Error encountered purchasing commodities'
-          });
+          }));
 
         case 64:
         case "end":
@@ -348,19 +346,17 @@ var deleteCommodityByName = function deleteCommodityByName(req, res) {
           }));
 
         case 7:
-          res.status(200).json({
+          return _context3.abrupt("return", res.status(200).json({
             message: 'Commodity deleted successfully'
-          });
-          _context3.next = 14;
-          break;
+          }));
 
         case 10:
           _context3.prev = 10;
           _context3.t0 = _context3["catch"](0);
           console.error(_context3.t0);
-          res.status(500).json({
+          return _context3.abrupt("return", res.status(500).json({
             message: 'Error encountered deleting commodity'
-          });
+          }));
 
         case 14:
         case "end":
@@ -457,19 +453,17 @@ var getAllCommodities = function getAllCommodities(req, res) {
 
         case 3:
           commodities = _context5.sent;
-          res.status(200).json({
+          return _context5.abrupt("return", res.status(200).json({
             commodities: commodities
-          });
-          _context5.next = 11;
-          break;
+          }));
 
         case 7:
           _context5.prev = 7;
           _context5.t0 = _context5["catch"](0);
           console.error(_context5.t0);
-          res.status(500).json({
+          return _context5.abrupt("return", res.status(500).json({
             message: 'Error encountered retrieving commodities'
-          });
+          }));
 
         case 11:
         case "end":
@@ -504,19 +498,17 @@ var getCommodityById = function getCommodityById(req, res) {
           }));
 
         case 7:
-          res.status(200).json({
+          return _context6.abrupt("return", res.status(200).json({
             commodity: commodity
-          });
-          _context6.next = 14;
-          break;
+          }));
 
         case 10:
           _context6.prev = 10;
           _context6.t0 = _context6["catch"](0);
           console.error(_context6.t0);
-          res.status(500).json({
+          return _context6.abrupt("return", res.status(500).json({
             message: 'Error encountered retrieving commodity'
-          });
+          }));
 
         case 14:
         case "end":
@@ -573,19 +565,17 @@ var searchCommodities = function searchCommodities(req, res) {
 
         case 6:
           commodities = _context7.sent;
-          res.status(200).json({
+          return _context7.abrupt("return", res.status(200).json({
             commodities: commodities
-          });
-          _context7.next = 14;
-          break;
+          }));
 
         case 10:
           _context7.prev = 10;
           _context7.t0 = _context7["catch"](0);
           console.error('Error during commodity search:', _context7.t0);
-          res.status(500).json({
+          return _context7.abrupt("return", res.status(500).json({
             message: 'Server error'
-          });
+          }));
 
         case 14:
         case "end":
@@ -637,17 +627,15 @@ var mostCompletedSales = function mostCompletedSales(req, res) {
 
         case 3:
           topFarmers = _context8.sent;
-          res.json(topFarmers);
-          _context8.next = 11;
-          break;
+          return _context8.abrupt("return", res.json(topFarmers));
 
         case 7:
           _context8.prev = 7;
           _context8.t0 = _context8["catch"](0);
           console.error('Error fetching top farmers:', _context8.t0);
-          res.status(500).json({
+          return _context8.abrupt("return", res.status(500).json({
             message: 'Internal server error'
-          });
+          }));
 
         case 11:
         case "end":
@@ -744,20 +732,18 @@ var mostSoldProduct = function mostSoldProduct(req, res) {
 
         case 18:
           mostSoldProductDetails = _context9.sent;
-          res.status(200).json({
+          return _context9.abrupt("return", res.status(200).json({
             mostSoldProducts: mostSoldProductDetails,
             maxSales: maxSales
-          });
-          _context9.next = 26;
-          break;
+          }));
 
         case 22:
           _context9.prev = 22;
           _context9.t0 = _context9["catch"](0);
           console.error(_context9.t0);
-          res.status(500).json({
+          return _context9.abrupt("return", res.status(500).json({
             message: 'Error fetching most sold products'
-          });
+          }));
 
         case 26:
         case "end":
@@ -799,17 +785,15 @@ var getCompleteOrdersByFarmer = function getCompleteOrdersByFarmer(req, res) {
 
         case 9:
           orders = _context10.sent;
-          res.status(200).json(orders);
-          _context10.next = 17;
-          break;
+          return _context10.abrupt("return", res.status(200).json(orders));
 
         case 13:
           _context10.prev = 13;
           _context10.t0 = _context10["catch"](0);
           console.error(_context10.t0);
-          res.status(500).json({
+          return _context10.abrupt("return", res.status(500).json({
             message: 'Server error'
-          });
+          }));
 
         case 17:
         case "end":
@@ -911,11 +895,9 @@ var salesReport = function salesReport(req, res) {
               })
             }]
           };
-          res.json({
+          return _context11.abrupt("return", res.json({
             chartData: chartData
-          });
-          _context11.next = 26;
-          break;
+          }));
 
         case 21:
           _context11.next = 23;
@@ -941,9 +923,9 @@ var salesReport = function salesReport(req, res) {
           _context11.prev = 28;
           _context11.t0 = _context11["catch"](0);
           console.error('Error generating sales report:', _context11.t0);
-          res.status(500).json({
+          return _context11.abrupt("return", res.status(500).json({
             message: 'Error generating sales report'
-          });
+          }));
 
         case 32:
         case "end":
@@ -1011,9 +993,9 @@ var productsTracker = function productsTracker(req, res) {
           _context12.prev = 14;
           _context12.t0 = _context12["catch"](0);
           console.error('Error tracking products:', _context12.t0);
-          res.status(500).json({
+          return _context12.abrupt("return", res.status(500).json({
             message: 'An error occurred while tracking products.'
-          });
+          }));
 
         case 18:
         case "end":

@@ -72,10 +72,10 @@ const addCommodity = async (req, res) => {
 
     await newPost.save();
 
-    res.status(201).json({ message: 'Commodity added and posted successfully', commodity: newCommodity, post: newPost });
+    return res.status(201).json({ message: 'Commodity added and posted successfully', commodity: newCommodity, post: newPost });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered adding commodity' });
+    return res.status(500).json({ message: 'Error encountered adding commodity' });
   }
 };
 
@@ -139,11 +139,11 @@ const buyCommodity = async (req, res) => {
       });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: error.message });
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered purchasing commodities' });
+    return res.status(500).json({ message: 'Error encountered purchasing commodities' });
   }
 };
 
@@ -159,10 +159,10 @@ const deleteCommodityByName = async (req, res) => {
       return res.status(404).json({ message: 'Commodity not found' });
     }
 
-    res.status(200).json({ message: 'Commodity deleted successfully' });
+    return res.status(200).json({ message: 'Commodity deleted successfully' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered deleting commodity' });
+    return res.status(500).json({ message: 'Error encountered deleting commodity' });
   }
 };
 
@@ -222,10 +222,10 @@ const getCommoditiesByFarmer = async (req, res) => {
 const getAllCommodities = async (req, res) => {
   try {
     const commodities = await Commodity.find();
-    res.status(200).json({ commodities });
+    return res.status(200).json({ commodities });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered retrieving commodities' });
+    return res.status(500).json({ message: 'Error encountered retrieving commodities' });
   }
 };
 
@@ -239,10 +239,10 @@ const getCommodityById = async (req, res) => {
       return res.status(404).json({ message: 'Commodity not found' });
     }
 
-    res.status(200).json({ commodity });
+    return res.status(200).json({ commodity });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Error encountered retrieving commodity' });
+    return res.status(500).json({ message: 'Error encountered retrieving commodity' });
   }
 };
 
@@ -265,10 +265,10 @@ const searchCommodities = async (req, res) => {
       ],
     });
 
-    res.status(200).json({ commodities });
+    return res.status(200).json({ commodities });
   } catch (error) {
     console.error('Error during commodity search:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -306,10 +306,10 @@ const mostCompletedSales = async (req, res) => {
       },
     ]);
 
-    res.json(topFarmers);
+    return res.json(topFarmers);
   } catch (error) {
     console.error('Error fetching top farmers:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -362,10 +362,10 @@ const mostSoldProduct = async (req, res) => {
     // populate product details, i might delete later
     const mostSoldProductDetails = await Commodity.find({ _id: { $in: mostSoldProducts } });
 
-    res.status(200).json({ mostSoldProducts: mostSoldProductDetails, maxSales });
+    return res.status(200).json({ mostSoldProducts: mostSoldProductDetails, maxSales });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching most sold products' });
+    return res.status(500).json({ message: 'Error fetching most sold products' });
   }
 };
 
@@ -383,10 +383,10 @@ const getCompleteOrdersByFarmer = async (req, res) => {
       paymentStatus: 'paid',
     }).populate('items.commodity').populate('customer');
 
-    res.status(200).json(orders);
+    return res.status(200).json(orders);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -446,7 +446,7 @@ const salesReport = async (req, res) => {
         }],
       };
 
-      res.json({ chartData });
+      return res.json({ chartData });
     } else {
       // Display on screen with pagination
       const itemCount = await Order.countDocuments({ paymentStatus: 'paid' });
@@ -461,7 +461,7 @@ const salesReport = async (req, res) => {
     }
   } catch (error) {
     console.error('Error generating sales report:', error);
-    res.status(500).json({ message: 'Error generating sales report' });
+    return res.status(500).json({ message: 'Error generating sales report' });
   }
 };
 
@@ -505,7 +505,7 @@ const productsTracker = async (req, res) => {
     });
   } catch (error) {
     console.error('Error tracking products:', error);
-    res.status(500).json({ message: 'An error occurred while tracking products.' });
+    return res.status(500).json({ message: 'An error occurred while tracking products.' });
   }
 };
 

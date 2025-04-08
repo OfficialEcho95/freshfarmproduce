@@ -54,11 +54,6 @@ services:
       - .:/freshfarm
       - /freshfarm/node_modules
     command: ["npm", "start"]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   mongo_data:

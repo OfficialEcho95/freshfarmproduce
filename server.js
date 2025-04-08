@@ -38,8 +38,4 @@ app.use('/commodityUploads', express.static(path.join(__dirname, '/commodityUplo
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/users', userRoutes);
 
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
-
 module.exports = app;

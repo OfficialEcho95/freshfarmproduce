@@ -24,8 +24,8 @@ var _require5 = require('../controllers/salesReport'),
     salesReport = _require5.salesReport;
 
 var router = express.Router();
-router.post('/registerAdmin', registerAdmin);
-router.post('/loginAdmin', loginAdmin);
+router.post('/registerAdmin', registerAdmin); // router.post('/loginAdmin', loginAdmin);
+
 router.use(adminAuthenticateToken, adminAccess);
 router.get('/logout-admin', logoutAdmin);
 router.post('/admincreateuser', adminCreateUser);

@@ -10,7 +10,7 @@ const { salesReport } = require('../controllers/salesReport');
 const router = express.Router();
 
 router.post('/registerAdmin', registerAdmin);
-router.post('/loginAdmin', loginAdmin);
+// router.post('/loginAdmin', loginAdmin);
 
 router.use(adminAuthenticateToken, adminAccess);
 router.get('/logout-admin', logoutAdmin);

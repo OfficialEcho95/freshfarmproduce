@@ -133,11 +133,14 @@ describe('user Login Tests', () => {
   });
 
   it('should log in successfully and return a token', async () => {
+    // Hash the password to match what bcrypt would do
+    const hashedPassword = await bcrypt.hash('hashedpassword', 10);
+
     const mockUser = {
       _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
-      password: await bcrypt.hash('hashedpassword', 10),
+      password: hashedPassword, // Use the hashed password
       lastLogin: new Date(),
       save: jest.fn().mockResolvedValue(true), // Mock save function
       toObject: jest.fn().mockReturnValue({
@@ -148,15 +151,27 @@ describe('user Login Tests', () => {
       }),
     };
 
+    // Mocking User.findOne to return the mock user
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
-    jest.spyOn(bcrypt, 'compare').mockResolvedValue(true); // Ensure password matches
 
+    // Mock bcrypt.compare to ensure it returns true (password match)
+    jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+
+    // Send login request with the correct password
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: mockUser.password });
+      .send({ email: 'test@example.com', password: 'hashedpassword' });
 
+    // Log the response to debug
+    console.log(response.body);
+
+    // Assert that the response status is 200
     expect(response.status).toBe(200);
+
+    // Assert that the response message is correct
     expect(response.body.message).toBe('Test User logged in successfully');
+
+    // Assert that a token is returned
     expect(response.body.token).toBeDefined();
   });
 });

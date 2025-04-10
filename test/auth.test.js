@@ -137,7 +137,7 @@ describe('user Login Tests', () => {
       _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
-      password: await bcrypt.hash('hashedpassword', 10),
+      password: 'hashedpassword',
       lastLogin: new Date(),
       save: jest.fn().mockResolvedValue(true), // Mock save function
       toObject: jest.fn().mockReturnValue({

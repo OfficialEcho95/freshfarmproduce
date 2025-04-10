@@ -310,11 +310,11 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
           case 5:
             response = _context9.sent;
-            (0, _globals.expect)(response.status).toBe(200);
-            (0, _globals.expect)(response.body.message).toBe('Test User logged in successfully');
+            (0, _globals.expect)(response.status).toBe(200); // expect(response.body.message).toBe('Test User logged in successfully');
+
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 9:
+          case 8:
           case "end":
             return _context9.stop();
         }

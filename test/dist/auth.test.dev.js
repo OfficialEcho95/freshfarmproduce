@@ -276,7 +276,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
     });
   });
   (0, _globals.it)('should log in successfully and return a token', function _callee9() {
-    var hashedPassword, mockUser, response;
+    var mockUser, response;
     return regeneratorRuntime.async(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
@@ -285,48 +285,45 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
             return regeneratorRuntime.awrap(_bcryptjs["default"].hash('hashedpassword', 10));
 
           case 2:
-            hashedPassword = _context9.sent;
+            _context9.t0 = _context9.sent;
+            _context9.t1 = new Date();
+            _context9.t2 = _globals.jest.fn().mockResolvedValue(true);
+            _context9.t3 = _globals.jest.fn().mockReturnValue({
+              _id: 'someUserId',
+              email: 'test@example.com',
+              name: 'Test User',
+              lastLogin: new Date()
+            });
             mockUser = {
               _id: 'someUserId',
               email: 'test@example.com',
               name: 'Test User',
-              password: hashedPassword,
-              // Use the hashed password
-              lastLogin: new Date(),
-              save: _globals.jest.fn().mockResolvedValue(true),
-              // Mock save function
-              toObject: _globals.jest.fn().mockReturnValue({
-                _id: 'someUserId',
-                email: 'test@example.com',
-                name: 'Test User',
-                lastLogin: new Date()
-              })
-            }; // Mocking User.findOne to return the mock user
+              password: _context9.t0,
+              lastLogin: _context9.t1,
+              save: _context9.t2,
+              toObject: _context9.t3
+            };
+            console.log('Mock User:', mockUser.password);
+            console.log('Sent login', _supertest["default"].body.password);
 
-            _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser); // Mock bcrypt.compare to ensure it returns true (password match)
+            _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
+
+            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true); // Ensure password matches
 
 
-            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true); // Send login request with the correct password
-
-
-            _context9.next = 8;
+            _context9.next = 13;
             return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
               password: 'hashedpassword'
             }));
 
-          case 8:
+          case 13:
             response = _context9.sent;
-            // Log the response to debug
-            console.log(response.body); // Assert that the response status is 200
-
-            (0, _globals.expect)(response.status).toBe(200); // Assert that the response message is correct
-
-            (0, _globals.expect)(response.body.message).toBe('Test User logged in successfully'); // Assert that a token is returned
-
+            (0, _globals.expect)(response.status).toBe(200);
+            (0, _globals.expect)(response.body.message).toBe('Test User logged in successfully');
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 13:
+          case 17:
           case "end":
             return _context9.stop();
         }

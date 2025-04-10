@@ -276,19 +276,23 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
     });
   });
   (0, _globals.it)('should log in successfully and return a token', function _callee9() {
-    var mockUser, response;
+    var hashedPassword, mockUser, response;
     return regeneratorRuntime.async(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
+            _context9.next = 2;
+            return regeneratorRuntime.awrap(_bcryptjs["default"].hash('hashedpassword', 10));
+
+          case 2:
+            hashedPassword = _context9.sent;
             mockUser = {
               _id: 'someUserId',
               email: 'test@example.com',
               name: 'Test User',
-              password: 'hashedpassword',
+              password: hashedPassword,
               lastLogin: new Date(),
               save: _globals.jest.fn().mockResolvedValue(true),
-              // Mock save function
               toObject: _globals.jest.fn().mockReturnValue({
                 _id: 'someUserId',
                 email: 'test@example.com',
@@ -299,22 +303,24 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
             _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
 
-            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true); // Ensure password matches
+            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true);
 
-
-            _context9.next = 5;
+            _context9.next = 8;
             return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
               password: 'hashedpassword'
             }));
 
-          case 5:
+          case 8:
             response = _context9.sent;
-            (0, _globals.expect)(response.status).toBe(200); // expect(response.body.message).toBe('Test User logged in successfully');
+            // Log response to check for debugging
+            console.log('Response:', response.body); // Expect status 200
+
+            (0, _globals.expect)(response.status).toBe(200); // Check for token in response body
 
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 8:
+          case 12:
           case "end":
             return _context9.stop();
         }

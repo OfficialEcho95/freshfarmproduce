@@ -10,7 +10,7 @@ import {
 import request from 'supertest';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { app } from '../index';
+import { app } from '../server';
 import User from '../backend/users/models/user';
 import redisClient from '../redisClient';
 

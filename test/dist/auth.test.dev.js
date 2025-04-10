@@ -8,7 +8,7 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 var _bcryptjs = _interopRequireDefault(require("bcryptjs"));
 
-var _index = require("../index");
+var _server = require("../server");
 
 var _user = _interopRequireDefault(require("../backend/users/models/user"));
 
@@ -132,7 +132,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
 
             _context4.next = 9;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/register-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/register-user').send({
               name: 'john doe',
               email: 'john.doe@example.com',
               password: 'password123',
@@ -163,7 +163,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
 
             _context5.next = 3;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/register-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/register-user').send({
               name: 'John Doe',
               email: 'john.doe@example.com',
               password: 'password123',
@@ -191,7 +191,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
             _user["default"].findOne.mockRejectedValue(new Error('DB Error'));
 
             _context6.next = 3;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/register-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/register-user').send({
               name: 'John Doe',
               email: 'john.doe@example.com',
               password: 'password123',
@@ -223,7 +223,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
 
             _context7.next = 3;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/login-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/login-user').send({
               email: 'nonexistent@example.com',
               password: 'password123'
             }));
@@ -258,7 +258,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
 
             _context8.next = 5;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/login-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
               password: 'wrongpassword'
             }));
@@ -310,7 +310,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
 
             _context9.next = 11;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_index.app).post('/api/v1/users/login-user').send({
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server.app).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
               password: 'hashedpassword'
             }));

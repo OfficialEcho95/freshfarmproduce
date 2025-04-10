@@ -137,7 +137,7 @@ describe('user Login Tests', () => {
       _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
-      password: 'hashedpassword',
+      password: await bcrypt.hash('hashedpassword', 10),
       lastLogin: new Date(),
       save: jest.fn().mockResolvedValue(true), // Mock save function
       toObject: jest.fn().mockReturnValue({
@@ -147,15 +147,13 @@ describe('user Login Tests', () => {
         lastLogin: new Date(),
       }),
     };
-    console.log('Mock User:', mockUser.password);
-    console.log('Sent login', request.body);
 
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true); // Ensure password matches
 
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: 'hashedpassword' });
+      .send({ email: 'test@example.com', password: 'hashedPassword' });
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Test User logged in successfully');

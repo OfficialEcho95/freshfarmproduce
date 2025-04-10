@@ -303,7 +303,8 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
               })
             };
 
-            _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
+            _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser); // Mock bcrypt.compare to return true for matching passwords
+
 
             _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockImplementation(function _callee9(enteredPassword, storedPassword) {
               return regeneratorRuntime.async(function _callee9$(_context9) {

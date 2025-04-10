@@ -152,6 +152,8 @@ describe('user Login Tests', () => {
     };
 
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
+
+    // Mock bcrypt.compare to return true for matching passwords
     jest.spyOn(bcrypt, 'compare').mockImplementation(async (enteredPassword, storedPassword) => {
       console.log(`Comparing entered password: ${enteredPassword} with stored password: ${storedPassword}`);
       return enteredPassword === plainPassword; // Simple comparison for debugging

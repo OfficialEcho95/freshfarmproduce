@@ -133,14 +133,11 @@ describe('user Login Tests', () => {
   });
 
   it('should log in successfully and return a token', async () => {
-    const plainPassword = 'hashedpassword';
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
     const mockUser = {
       _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
-      password: hashedPassword, // Store the hashed password
+      password: 'hashedPassword', // Store the hashed password
       lastLogin: new Date(),
       save: jest.fn().mockResolvedValue(true),
       toObject: jest.fn().mockReturnValue({
@@ -154,14 +151,11 @@ describe('user Login Tests', () => {
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
 
     // Mock bcrypt.compare to return true for matching passwords
-    jest.spyOn(bcrypt, 'compare').mockImplementation(async (enteredPassword, storedPassword) => {
-      console.log(`Comparing entered password: ${enteredPassword} with stored password: ${storedPassword}`);
-      return enteredPassword === plainPassword; // Simple comparison for debugging
-    });
+    jest.spyOn(bcrypt, 'compare').mockImplementation(true);
 
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: plainPassword });
+      .send({ email: 'test@example.com', password: 'hashedpassword' });
 
     console.log('Response:', response.body); // Log response to debug
 

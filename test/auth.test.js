@@ -147,8 +147,6 @@ describe('user Login Tests', () => {
         lastLogin: new Date(),
       }),
     };
-    console.log('Mock User:', mockUser.password);
-    console.log('Sent login', request.body.password);
 
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true); // Ensure password matches

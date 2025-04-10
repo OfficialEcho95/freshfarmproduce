@@ -296,27 +296,25 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
                 lastLogin: new Date()
               })
             };
-            console.log('Mock User:', mockUser.password);
-            console.log('Sent login', _supertest["default"].body.password);
 
             _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
 
             _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true); // Ensure password matches
 
 
-            _context9.next = 7;
+            _context9.next = 5;
             return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
               password: 'hashedpassword'
             }));
 
-          case 7:
+          case 5:
             response = _context9.sent;
             (0, _globals.expect)(response.status).toBe(200);
             (0, _globals.expect)(response.body.message).toBe('Test User logged in successfully');
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 11:
+          case 9:
           case "end":
             return _context9.stop();
         }

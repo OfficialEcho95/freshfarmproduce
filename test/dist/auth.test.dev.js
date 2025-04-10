@@ -312,7 +312,7 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
             _context9.next = 11;
             return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
-              password: 'hashedpassword'
+              password: mockUser.password
             }));
 
           case 11:

@@ -153,7 +153,7 @@ describe('user Login Tests', () => {
 
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: 'hashedpassword' });
+      .send({ email: 'test@example.com', password: mockUser.password });
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe('Test User logged in successfully');

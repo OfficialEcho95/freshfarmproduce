@@ -91,7 +91,8 @@ const loginUser = async (req, res) => {
     await req.session.save();
 
     // Create a new object without the password
-    const { password: _, ...userWithoutPassword } = user.toObject(); // Converting Mongoose document to plain object and exclude password
+    const { password: _, ...userWithoutPassword } = user.toObject();
+    // Converting Mongoose document to plain object and exclude password
 
     return res.status(200).json({ message: `${user.name} logged in successfully`, user: userWithoutPassword, token });
   } catch (err) {

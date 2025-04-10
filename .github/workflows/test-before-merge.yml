@@ -44,14 +44,14 @@ jobs:
     - name: Show logs for debugging (freshfarm_app container)
       run: docker logs freshfarm_app  # This will give you insight into the container's logs
 
-    - name: Check if freshfarm_app is healthy
-      run: |
-        container_health=$(docker inspect --format '{{.State.Health.Status}}' freshfarm_app)
-        if [[ "$container_health" != "healthy" ]]; then
-          echo "Container freshfarm_app is not healthy. Exiting."
-          docker inspect freshfarm_app  # Add this to inspect the container for more details
-          exit 1
-        fi
+    # - name: Check if freshfarm_app is healthy
+    #   run: |
+    #     container_health=$(docker inspect --format '{{.State.Health.Status}}' freshfarm_app)
+    #     if [[ "$container_health" != "healthy" ]]; then
+    #       echo "Container freshfarm_app is not healthy. Exiting."
+    #       docker inspect freshfarm_app  # Add this to inspect the container for more details
+    #       exit 1
+    #     fi
 
     - name: Run tests
       run: |

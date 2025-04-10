@@ -275,22 +275,24 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
       }
     });
   });
-  (0, _globals.it)('should log in successfully and return a token', function _callee9() {
-    var hashedPassword, mockUser, response;
-    return regeneratorRuntime.async(function _callee9$(_context9) {
+  (0, _globals.it)('should log in successfully and return a token', function _callee10() {
+    var plainPassword, hashedPassword, mockUser, response;
+    return regeneratorRuntime.async(function _callee10$(_context10) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context10.prev = _context10.next) {
           case 0:
-            _context9.next = 2;
-            return regeneratorRuntime.awrap(_bcryptjs["default"].hash('hashedpassword', 10));
+            plainPassword = 'hashedpassword';
+            _context10.next = 3;
+            return regeneratorRuntime.awrap(_bcryptjs["default"].hash(plainPassword, 10));
 
-          case 2:
-            hashedPassword = _context9.sent;
+          case 3:
+            hashedPassword = _context10.sent;
             mockUser = {
               _id: 'someUserId',
               email: 'test@example.com',
               name: 'Test User',
               password: hashedPassword,
+              // Store the hashed password
               lastLogin: new Date(),
               save: _globals.jest.fn().mockResolvedValue(true),
               toObject: _globals.jest.fn().mockReturnValue({
@@ -303,26 +305,40 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
 
             _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
 
-            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true);
+            _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockImplementation(function _callee9(enteredPassword, storedPassword) {
+              return regeneratorRuntime.async(function _callee9$(_context9) {
+                while (1) {
+                  switch (_context9.prev = _context9.next) {
+                    case 0:
+                      console.log("Comparing entered password: ".concat(enteredPassword, " with stored password: ").concat(storedPassword));
+                      return _context9.abrupt("return", enteredPassword === plainPassword);
 
-            _context9.next = 8;
+                    case 2:
+                    case "end":
+                      return _context9.stop();
+                  }
+                }
+              });
+            });
+
+            _context10.next = 9;
             return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
               email: 'test@example.com',
-              password: 'hashedpassword'
+              password: plainPassword
             }));
 
-          case 8:
-            response = _context9.sent;
-            // Log response to check for debugging
-            console.log('Response:', response.body); // Expect status 200
+          case 9:
+            response = _context10.sent;
+            console.log('Response:', response.body); // Log response to debug
+            // Expect status 200 if login is successful
 
             (0, _globals.expect)(response.status).toBe(200); // Check for token in response body
 
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 12:
+          case 13:
           case "end":
-            return _context9.stop();
+            return _context10.stop();
         }
       }
     });

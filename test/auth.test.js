@@ -133,12 +133,14 @@ describe('user Login Tests', () => {
   });
 
   it('should log in successfully and return a token', async () => {
-    const hashedPassword = await bcrypt.hash('hashedpassword', 10);
+    const plainPassword = 'hashedpassword';
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
     const mockUser = {
       _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
-      password: hashedPassword,
+      password: hashedPassword, // Store the hashed password
       lastLogin: new Date(),
       save: jest.fn().mockResolvedValue(true),
       toObject: jest.fn().mockReturnValue({
@@ -150,16 +152,18 @@ describe('user Login Tests', () => {
     };
 
     jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
-    jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+    jest.spyOn(bcrypt, 'compare').mockImplementation(async (enteredPassword, storedPassword) => {
+      console.log(`Comparing entered password: ${enteredPassword} with stored password: ${storedPassword}`);
+      return enteredPassword === plainPassword; // Simple comparison for debugging
+    });
 
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: 'hashedpassword' });
+      .send({ email: 'test@example.com', password: plainPassword });
 
-    // Log response to check for debugging
-    console.log('Response:', response.body);
+    console.log('Response:', response.body); // Log response to debug
 
-    // Expect status 200
+    // Expect status 200 if login is successful
     expect(response.status).toBe(200);
 
     // Check for token in response body

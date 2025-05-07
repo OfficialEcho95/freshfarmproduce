@@ -13,6 +13,7 @@
     "license": "ISC",
     "dependencies": {
         "@redis/client": "^1.6.0",
+        "@upstash/redis": "^1.34.9",
         "bcrypt": "^5.1.1",
         "bcryptjs": "^3.0.2",
         "chart.js": "^4.4.3",

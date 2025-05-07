@@ -1,7 +1,5 @@
 "use strict";
 
-var _redis = require("@upstash/redis");
-
 // /* eslint-disable jest/require-hook */
 // const { createClient } = require('@redis/client');
 // // const redisHost = process.env.REDIS_HOST || 'localhost';
@@ -16,7 +14,10 @@ var _redis = require("@upstash/redis");
 //   console.error('Redis Client Error:', error);
 // });
 // module.exports = redisClient;
-var redis = new _redis.Redis({
+var _require = require('@upstash/redis'),
+    Redis = _require.Redis;
+
+var redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL,
   token: process.env.UPSTASH_REDIS_REST_TOKEN
 }); // Set value in Redis

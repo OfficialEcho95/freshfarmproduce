@@ -5,10 +5,12 @@
 /* eslint-disable linebreak-style */
 const app = require('./server');
 
+const PORT = process.env.PORT || 3001;
+
 if (process.env.NODE_ENV !== 'test') {
     console.log('Starting the server...');
-    app.listen(process.env.PORT, () => {
-        console.log(`Server started on http://localhost:${process.env.PORT}`);
+    app.listen(PORT, () => {
+        console.log(`Server started on http://localhost:${PORT}`);
     });
 } else {
     console.log('Running in test mode - server not started');

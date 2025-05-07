@@ -14,15 +14,14 @@ function capitalizeEmail(email) {
 function capitalizeEachWord(str) {
   return str
     .split(' ') // Split the string into words
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    // Capitalize each word
     .join(' '); // Join the words back into a single string
 }
 
 // Function to register new users
 const registerUser = async (req, res) => {
-  const {
-    name, email, password, role,
-  } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     const emailExists = await User.findOne({ email });
@@ -41,30 +40,39 @@ const registerUser = async (req, res) => {
 
     await newUser.save();
 
-    // Publish an event to the Redis channel
-    await redisClient.publish('user-registered', JSON.stringify({
-      email: newUser.email,
-      subject: 'Welcome!',
-      text: 'Thank you for registering!',
-    }));
+    // await redisClient.publish('user-registered', JSON.stringify({
+    //   email: newUser.email,
+    //   subject: 'Welcome!',
+    //   text: 'Thank you for registering!',
+    // }));
 
     if (newUser.role === 'admin') {
       const newAdmin = new Admin({
         name,
-        password,
+        password: hashedPassword, // important: use hashed here too
         role,
         email,
       });
       await newAdmin.save();
     }
+
     return res.status(201).json({
-      message: 'User registered successfully', newUser,
+      message: 'User registered successfully',
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        createdAt: newUser.createdAt,
+      },
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'Error registering user' });
   }
 };
 
+// Function to login users
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;

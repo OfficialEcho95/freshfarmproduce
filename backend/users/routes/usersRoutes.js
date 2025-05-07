@@ -20,7 +20,7 @@ const { verifyPayment, initializePayment } = require('../../../payment/paymentCo
 const { userPurchases, mostPurchasedProduct, topPurchasedProducts } = require('../controllers/buyerController');
 const { getPosts } = require('../controllers/homefeedController');
 const {
-  addItemToCart, getCart, updateCartItem, removeCartItem, clearCart, checkout, checkoutCart,
+  addItemToCart, getCart, updateCartItem, removeCartItem, clearCart, checkoutCart,
 } = require('../controllers/cartController');
 
 router.post('/register-user', registerUser);

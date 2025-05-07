@@ -73,48 +73,49 @@ var registerUser = function registerUser(req, res) {
           return regeneratorRuntime.awrap(newUser.save());
 
         case 13:
-          _context.next = 15;
-          return regeneratorRuntime.awrap(redisClient.publish('user-registered', JSON.stringify({
-            email: newUser.email,
-            subject: 'Welcome!',
-            text: 'Thank you for registering!'
-          })));
-
-        case 15:
           if (!(newUser.role === 'admin')) {
-            _context.next = 19;
+            _context.next = 17;
             break;
           }
 
           newAdmin = new Admin({
             name: name,
-            password: password,
+            password: hashedPassword,
+            // important: use hashed here too
             role: role,
             email: email
           });
-          _context.next = 19;
+          _context.next = 17;
           return regeneratorRuntime.awrap(newAdmin.save());
 
-        case 19:
+        case 17:
           return _context.abrupt("return", res.status(201).json({
             message: 'User registered successfully',
-            newUser: newUser
+            user: {
+              id: newUser._id,
+              name: newUser.name,
+              email: newUser.email,
+              role: newUser.role,
+              createdAt: newUser.createdAt
+            }
           }));
 
-        case 22:
-          _context.prev = 22;
+        case 20:
+          _context.prev = 20;
           _context.t0 = _context["catch"](1);
+          console.error('Registration error:', _context.t0);
           res.status(500).json({
             message: 'Error registering user'
           });
 
-        case 25:
+        case 24:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[1, 22]]);
-};
+  }, null, null, [[1, 20]]);
+}; // Function to login users
+
 
 var loginUser = function loginUser(req, res) {
   var _req$body2, email, password, user, comparePassword, token, _user$toObject, _, userWithoutPassword;

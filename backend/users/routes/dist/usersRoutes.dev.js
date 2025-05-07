@@ -50,7 +50,6 @@ var _require7 = require('../controllers/cartController'),
     updateCartItem = _require7.updateCartItem,
     removeCartItem = _require7.removeCartItem,
     clearCart = _require7.clearCart,
-    checkout = _require7.checkout,
     checkoutCart = _require7.checkoutCart;
 
 router.post('/register-user', registerUser);

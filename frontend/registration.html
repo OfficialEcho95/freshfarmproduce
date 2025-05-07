@@ -53,10 +53,6 @@
                     <label for="password">Password:</label>
                     <input type="password" class="form-control" id="password" name="password" required>
                 </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required />
-                </div>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="isFarmer" name="isFarmer">
                     <label class="form-check-label" for="isFarmer">Have a product to sell?</label>
@@ -77,13 +73,7 @@
             const password = document.getElementById("password").value;
             const isFarmer = document.getElementById("isFarmer").checked;
             const role = isFarmer ? 'farmer' : 'buyer';
-            const confirmPassword = document.getElementById("confirmPassword").value;
-
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                return;
-            }
-
+        
             try {
                 const response = await fetch('/api/v1/users/register-user', {
                     method: "POST",

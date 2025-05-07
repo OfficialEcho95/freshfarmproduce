@@ -26,7 +26,7 @@ const {
 router.post('/register-user', registerUser);
 router.post('/login-user', loginUser);
 
-// protected routes
+// protected routes 
 router.use(authenticateToken);
 router.post('/check-session', checkSession);
 router.get('/logout-user', logoutUser);

@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { generateToken } = require('../../middlewares/userAuthentication');
 const User = require('../models/user');
 const Admin = require('../../admin/models/admin');
@@ -70,7 +70,6 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-
     if (!user) {
       return res.status(404).json({ message: 'Email does not exist' });
     }
@@ -85,10 +84,12 @@ const loginUser = async (req, res) => {
     await user.save();
 
     const token = generateToken(user._id);
-    req.session.userId = user._id.toString();
-    req.session.token = token;
 
-    await req.session.save();
+    if (req.session) {
+      req.session.userId = user._id.toString();
+      req.session.token = token;
+      await req.session.save();
+    }
 
     // Create a new object without the password
     const { password: _, ...userWithoutPassword } = user.toObject();
@@ -96,7 +97,8 @@ const loginUser = async (req, res) => {
 
     return res.status(200).json({ message: `${user.name} logged in successfully`, user: userWithoutPassword, token });
   } catch (err) {
-    res.status(500).json({ message: 'Error encountered logging in' });
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Error encountered logging in' });
   }
 };
 
@@ -110,7 +112,7 @@ const updateUserData = async (req, res) => {
       return res.status(400).json({ message: 'No data provided' });
     }
 
-    console.log(req.session)
+    console.log(req.session);
 
     const update = {};
 

@@ -6,8 +6,8 @@
     "scripts": {
         "lint": "./node_modules/.bin/eslint",
         "check-lint": "lint [0-9]*.js",
-        "start": "node index.js",
-        "test": "NODE_ENV=test jest --runInBand"
+        "start": "nodemon index.js",
+        "test": "jest --runInBand"
     },
     "author": "Chukwu Emmanuel",
     "license": "ISC",

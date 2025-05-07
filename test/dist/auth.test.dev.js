@@ -16,6 +16,8 @@ var _redisClient = _interopRequireDefault(require("../redisClient"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+/* eslint-disable jest/no-duplicate-hooks */
+
 /* eslint-disable jest/prefer-expect-assertions */
 
 /* eslint-disable jest/no-confusing-set-timeout */
@@ -44,8 +46,20 @@ _globals.jest.mock('../redisClient'); // Mock Redis client
 // Set up Jest timeouts
 
 
-_globals.jest.setTimeout(20000); // ** Before All Tests **
+_globals.jest.setTimeout(20000); // 🔧 Add middleware to mock req.session
 
+
+(0, _globals.beforeAll)(function () {
+  _server["default"].use(function (req, res, next) {
+    req.session = {
+      userId: null,
+      token: null,
+      save: _globals.jest.fn().mockResolvedValue(true) // ✅ Mocking .save()
+
+    };
+    next();
+  });
+}); // ** Before All Tests **
 
 (0, _globals.beforeAll)(function _callee() {
   return regeneratorRuntime.async(function _callee$(_context) {
@@ -276,52 +290,50 @@ _globals.jest.setTimeout(20000); // ** Before All Tests **
     });
   });
   (0, _globals.it)('should log in successfully and return a token', function _callee9() {
-    var mockUser, response;
+    var loginData, mockUser, response;
     return regeneratorRuntime.async(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
-            _context9.next = 2;
+            loginData = {
+              email: 'test@example.com',
+              password: 'hashedpassword'
+            };
+            _context9.next = 3;
             return regeneratorRuntime.awrap(_bcryptjs["default"].hash('hashedpassword', 10));
 
-          case 2:
+          case 3:
             _context9.t0 = _context9.sent;
-            _context9.t1 = new Date();
-            _context9.t2 = _globals.jest.fn().mockResolvedValue(true);
-            _context9.t3 = _globals.jest.fn().mockReturnValue({
-              _id: 'someUserId',
+            _context9.t1 = _globals.jest.fn().mockResolvedValue(false);
+            _context9.t2 = _globals.jest.fn().mockReturnValue({
               email: 'test@example.com',
-              name: 'Test User',
-              lastLogin: new Date()
+              name: 'Test User'
             });
             mockUser = {
-              _id: 'someUserId',
               email: 'test@example.com',
               name: 'Test User',
               password: _context9.t0,
-              lastLogin: _context9.t1,
-              save: _context9.t2,
-              toObject: _context9.t3
+              save: _context9.t1,
+              toObject: _context9.t2
             };
 
-            _globals.jest.spyOn(_user["default"], 'findOne').mockResolvedValue(mockUser);
-
+            // jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
             _globals.jest.spyOn(_bcryptjs["default"], 'compare').mockResolvedValue(true); // Ensure password matches
 
 
-            _context9.next = 11;
-            return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send({
-              email: 'test@example.com',
-              password: 'hashedPassword'
-            }));
+            _context9.next = 10;
+            return regeneratorRuntime.awrap((0, _supertest["default"])(_server["default"]).post('/api/v1/users/login-user').send(loginData));
 
-          case 11:
+          case 10:
             response = _context9.sent;
+            console.log('Stored password: ', mockUser.password);
+            console.log('Entered password:', loginData.password);
+            console.log('Response:', response);
             (0, _globals.expect)(response.status).toBe(200);
-            (0, _globals.expect)(response.body.message).toBe('Test User logged in successfully');
+            (0, _globals.expect)(response.body.message).toBe("".concat(mockUser.name, " logged in successfully"));
             (0, _globals.expect)(response.body.token).toBeDefined();
 
-          case 15:
+          case 17:
           case "end":
             return _context9.stop();
         }

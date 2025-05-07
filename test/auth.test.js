@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-duplicate-hooks */
 /* eslint-disable jest/prefer-expect-assertions */
 /* eslint-disable jest/no-confusing-set-timeout */
 /* eslint-disable jest/no-hooks */
@@ -24,6 +25,17 @@ jest.mock('../redisClient'); // Mock Redis client
 
 // Set up Jest timeouts
 jest.setTimeout(20000);
+// 🔧 Add middleware to mock req.session
+beforeAll(() => {
+  app.use((req, res, next) => {
+    req.session = {
+      userId: null,
+      token: null,
+      save: jest.fn().mockResolvedValue(true), // ✅ Mocking .save()
+    };
+    next();
+  });
+});
 
 // ** Before All Tests **
 beforeAll(async () => {
@@ -32,6 +44,7 @@ beforeAll(async () => {
     useUnifiedTopology: true,
   });
 });
+
 
 // ** Before Each Test **
 beforeEach(async () => {
@@ -133,30 +146,31 @@ describe('user Login Tests', () => {
   });
 
   it('should log in successfully and return a token', async () => {
+    const loginData = { email: 'test@example.com', password: 'hashedpassword' };
     const mockUser = {
-      _id: 'someUserId',
       email: 'test@example.com',
       name: 'Test User',
       password: await bcrypt.hash('hashedpassword', 10),
-      lastLogin: new Date(),
-      save: jest.fn().mockResolvedValue(true), // Mock save function
+      save: jest.fn().mockResolvedValue(false), // Mock save function
       toObject: jest.fn().mockReturnValue({
-        _id: 'someUserId',
         email: 'test@example.com',
         name: 'Test User',
-        lastLogin: new Date(),
       }),
     };
 
-    jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
+    // jest.spyOn(User, 'findOne').mockResolvedValue(mockUser);
     jest.spyOn(bcrypt, 'compare').mockResolvedValue(true); // Ensure password matches
 
     const response = await request(app)
       .post('/api/v1/users/login-user')
-      .send({ email: 'test@example.com', password: 'hashedPassword' });
+      .send(loginData);
+
+    console.log('Stored password: ', mockUser.password);
+    console.log('Entered password:', loginData.password);
+    console.log('Response:', response);
 
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Test User logged in successfully');
+    expect(response.body.message).toBe(`${mockUser.name} logged in successfully`);
     expect(response.body.token).toBeDefined();
   });
 });

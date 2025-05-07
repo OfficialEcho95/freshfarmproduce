@@ -54,7 +54,7 @@ var _require7 = require('../controllers/cartController'),
     checkoutCart = _require7.checkoutCart;
 
 router.post('/register-user', registerUser);
-router.post('/login-user', loginUser); // protected routes
+router.post('/login-user', loginUser); // protected routes 
 
 router.use(authenticateToken);
 router.post('/check-session', checkSession);

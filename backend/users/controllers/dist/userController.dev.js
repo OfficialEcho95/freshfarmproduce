@@ -5,7 +5,7 @@ function _objectWithoutProperties(source, excluded) { if (source == null) return
 function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
 
 /* eslint-disable consistent-return */
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 
 var _require = require('../../middlewares/userAuthentication'),
     generateToken = _require.generateToken;
@@ -166,12 +166,18 @@ var loginUser = function loginUser(req, res) {
 
         case 15:
           token = generateToken(user._id);
+
+          if (!req.session) {
+            _context2.next = 21;
+            break;
+          }
+
           req.session.userId = user._id.toString();
           req.session.token = token;
-          _context2.next = 20;
+          _context2.next = 21;
           return regeneratorRuntime.awrap(req.session.save());
 
-        case 20:
+        case 21:
           // Create a new object without the password
           _user$toObject = user.toObject(), _ = _user$toObject.password, userWithoutPassword = _objectWithoutProperties(_user$toObject, ["password"]); // Converting Mongoose document to plain object and exclude password
 
@@ -181,19 +187,20 @@ var loginUser = function loginUser(req, res) {
             token: token
           }));
 
-        case 24:
-          _context2.prev = 24;
+        case 25:
+          _context2.prev = 25;
           _context2.t0 = _context2["catch"](0);
-          res.status(500).json({
+          console.error('Login error:', _context2.t0);
+          return _context2.abrupt("return", res.status(500).json({
             message: 'Error encountered logging in'
-          });
+          }));
 
-        case 27:
+        case 29:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[0, 24]]);
+  }, null, null, [[0, 25]]);
 }; // function to update user data
 
 

@@ -2,40 +2,8 @@
 <html lang="en">
 <!-- Basic -->
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-    <!-- Mobile Metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Site Metas -->
-    <title>Freshshop - Ecommerce Bootstrap 4 HTML Template</title>
-    <meta name="keywords" content="">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <!-- Site Icons -->
-    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <!-- Site CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Responsive CSS -->
-    <link rel="stylesheet" href="css/responsive.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/custom.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
+<!-- head-->
+<%- include('head-partial') %>
 
 <body>
     <!-- Start Main Top -->
@@ -74,7 +42,7 @@
                     <!-- Dropdown menu that will display the 5 options -->
                     <div id="dropdownMenu" class="dropdown-content"
                         style="display: none; padding: 10px; background: #f9f9f9; border: 1px solid #ccc; width: 200px;">
-                        <button id="register" class="btn btn-primary" style="margin-bottom: 10px; width: 100%;">Register</button>
+                        <button id="purchases" class="btn btn-primary" style="margin-bottom: 10px; width: 100%;">Purchases</button>
                         <button id="signin" class="btn btn-secondary" style="margin-bottom: 10px; width: 100%;">Sign In</button>
                         <button id="dashboard" class="btn btn-info" style="margin-bottom: 10px; width: 100%;">Dashboard</button>
                         <button id="settings" class="btn btn-warning" style="margin-bottom: 10px; width: 100%;">Settings</button>
@@ -92,8 +60,8 @@
                             });
 
                             // Each option will redirect the user when clicked
-                            document.getElementById("register").addEventListener("click", () => {
-                                window.location.href = "/registration.html";
+                            document.getElementById("purchases").addEventListener("click", () => {
+                                window.location.href = "/purchases                                                                                                                                                                                                                                                                                                                                                                                                      .html";
                             });
 
                             document.getElementById("signin").addEventListener("click", () => {
@@ -117,7 +85,7 @@
                                 } else {
                                     alert("Logout failed! Please try again.");
                                 }
-                            });
+                            });                                                      
                         });
                     </script>
                     

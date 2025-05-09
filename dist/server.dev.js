@@ -37,6 +37,8 @@ app.use(session({
   })
 }));
 app.use(cors());
+app.set('views', path.join(__dirname, 'frontend'));
+app.set('view engine', 'ejs');
 app.use(express["static"](path.join(__dirname, 'frontend')));
 app.use(express["static"](path.join(__dirname, 'frontend/js/html')));
 app.use('/commodityUploads', express["static"](path.join(__dirname, '/commodityUploads')));

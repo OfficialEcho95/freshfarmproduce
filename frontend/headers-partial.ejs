@@ -1,0 +1,153 @@
+<!-- Start Main Top -->
+<div class="main-top">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="custom-select-box">
+                    <select id="basic" class="selectpicker show-tick form-control" data-placeholder="$ USD">
+                        <option>¥ JPY</option>
+                        <option>$ USD</option>
+                        <option>€ EUR</option>
+                    </select>
+                </div>
+                <div class="right-phone-box">
+                    <p>Call US :- <a href="#"> +11 900 800 100</a></p>
+                </div>
+                <div class="our-link">
+                    <ul>
+                        <li><a href="#"><i class="fa fa-user s_color"></i> My Account</a></li>
+                        <li><a href="#"><i class="fas fa-location-arrow"></i> Our location</a></li>
+                        <li><a href="#"><i class="fas fa-headset"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="login-box">
+                    <!-- <select id="basic" class="selectpicker show-tick form-control" data-placeholder="Sign In">
+                            <option value="register">Register Here</option>
+                            <option value="signin">Sign In</option>
+                        </select> -->
+
+                    <!-- Main button to trigger the dropdown -->
+                    <button id="toggleButton" class="btn btn-primary">Click Me</button>
+
+                    <!-- Dropdown menu that will display the 5 options -->
+                    <div id="dropdownMenu" class="dropdown-content"
+                        style="display: none; padding: 10px; background: #f9f9f9; border: 1px solid #ccc; width: 200px;">
+                        <button id="purchases" class="btn btn-primary"
+                            style="margin-bottom: 10px; width: 100%;">Purchases</button>
+                        <button id="signin" class="btn btn-secondary" style="margin-bottom: 10px; width: 100%;">Sign
+                            In</button>
+                        <button id="dashboard" class="btn btn-info"
+                            style="margin-bottom: 10px; width: 100%;">Dashboard</button>
+                        <button id="settings" class="btn btn-warning"
+                            style="margin-bottom: 10px; width: 100%;">Settings</button>
+                        <button id="logout" class="btn btn-danger" style="margin-bottom: 10px; width: 100%;">Log
+                            Out</button>
+                    </div>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            const toggleButton = document.getElementById("toggleButton");
+                            const dropdownMenu = document.getElementById("dropdownMenu");
+
+                            // Toggle the dropdown visibility when clicking the main button
+                            toggleButton.addEventListener("click", function () {
+                                dropdownMenu.style.display = dropdownMenu.style.display === "none" ? "block" : "none";
+                            });
+
+                            // Each option will redirect the user when clicked
+                            document.getElementById("purchases").addEventListener("click", () => {
+                                window.location.href = "/purchases                                                                                                                                                                                                                                                                                                                                                                                                      .html";
+                            });
+
+                            document.getElementById("signin").addEventListener("click", () => {
+                                window.location.href = "/login.html";
+                            });
+
+                            document.getElementById("dashboard").addEventListener("click", () => {
+                                window.location.href = "/dashboard.html";
+                            });
+
+                            document.getElementById("settings").addEventListener("click", () => {
+                                window.location.href = "/settings.html";
+                            });
+
+                            document.getElementById("logout").addEventListener("click", async () => {
+                                const response = await fetch('/api/v1/users/logout-user', {
+                                    method: 'GET'
+                                });
+                                if (response.ok) {
+                                    window.location.href = "/index.html"; // Redirect to login page after logout
+                                } else {
+                                    alert("Logout failed! Please try again.");
+                                }
+                            });
+                        });
+                    </script>
+
+                    <!-- CSS for Dropdown -->
+                    <style>
+                        .dropdown-content {
+                            display: none;
+                            /* position: absolute; */
+                            z-index: 1;
+                        }
+
+                        .btn {
+                            margin: 5px;
+                        }
+                    </style>
+
+
+                </div>
+                <div class="text-slid-box">
+                    <div id="offer-box" class="carouselTicker">
+                        <ul class="offer-box">
+                            <li>
+                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT80
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> 50% - 80% off on Vegetables
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> Off 10%! Shop Vegetables
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> Off 50%! Shop Now
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> Off 10%! Shop Vegetables
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> 50% - 80% off on Vegetables
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT30
+                            </li>
+                            <li>
+                                <i class="fab fa-opencart"></i> Off 50%! Shop Now
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Main Top -->
+
+<!-- Start Main Top -->
+<header class="main-header">
+    <!-- Start Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
+        <div class="container">
+            <!-- Start Header Navigation -->
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu"
+                    aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="index.html"><img src="images/logo.png" class="logo" alt=""></a>
+            </div>
+            <!-- End Header Navigation -->

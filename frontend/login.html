@@ -24,7 +24,7 @@
         </form>
         <p>
             Don't have an account?
-            <a href="/registration.ejs">Register here</a>
+            <a href="/registration.html">Register here</a>
         </p>
     </div>
 
@@ -133,7 +133,7 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        window.location.href = "/dashboard.html";
+                        window.location.href = "/dashboard.ejs";
                     } else {
                         alert(data.message || "Login failed!");
                     }

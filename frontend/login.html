@@ -133,7 +133,7 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        window.location.href = "/dashboard.ejs";
+                        window.location.href = "/dashboard";
                     } else {
                         alert(data.message || "Login failed!");
                     }
